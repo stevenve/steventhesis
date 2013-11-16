@@ -1,0 +1,11 @@
+
+add_library(ci_footbot_state SHARED ci_footbot_state.cpp)
+target_link_libraries(ci_footbot_state
+  argos3core_simulator
+  argos3plugin_simulator_actuators
+  argos3plugin_simulator_footbot
+  argos3plugin_simulator_genericrobot
+  argos3plugin_simulator_sensors
+bt_footbot_simple_root_behavior
+  bt_footbot_simple_controller
+)

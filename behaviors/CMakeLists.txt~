@@ -1,0 +1,27 @@
+
+set(bt_behaviors
+  controllers/simple/bt_footbot_simple_controller.cpp
+  controllers/simple/bt_footbot_simple_root_behavior.cpp
+  BTSimple/swarmanoid/footbot/ci_footbot_state.cpp
+  BTSimple/swarmanoid/ci_swarmanoid_robot_state.cpp
+  BTSimple/ci_robot_state.cpp
+  behaviors/bt_footbot_randomwalk.cpp
+)
+
+add_library(bt_footbot_behaviors MODULE ${bt_behaviors})
+
+target_link_libraries(bt_footbot_behaviors
+  argos3core_simulator
+  argos3plugin_simulator_actuators
+  argos3plugin_simulator_footbot
+  argos3plugin_simulator_genericrobot
+  argos3plugin_simulator_sensors
+)
+
+
+
+
+
+
+
+
