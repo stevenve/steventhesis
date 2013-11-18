@@ -32,7 +32,10 @@ namespace argos{
 
 const std::string CCI_SwarmanoidRobotState::RAB_SENSOR_XML_NAME     = "range_and_bearing";
 const std::string CCI_SwarmanoidRobotState::RAB_ACTUATOR_XML_NAME   = "range_and_bearing";
+const std::string CCI_SwarmanoidRobotState::LEDS_ACTUATOR_XML_NAME             = "leds";
 
+//Actuator numbers
+    const UInt8  CCI_SwarmanoidRobotState::NUM_LEDS = 13;
    /****************************************/
    /****************************************/
 
@@ -53,6 +56,7 @@ const std::string CCI_SwarmanoidRobotState::RAB_ACTUATOR_XML_NAME   = "range_and
       CCI_Actuator::TMap::const_iterator itActuators;
 
       ACTUATOR_INIT_HELPER(RAB_ACTUATOR_XML_NAME, CCI_RangeAndBearingActuator, m_pcRABActuator, m_bIsUsingRABActuator);
+      ACTUATOR_INIT_HELPER(LEDS_ACTUATOR_XML_NAME,                CCI_LEDsActuator,            m_pcLedsActuator,               m_bIsUsingLeds);
    }
 
    /****************************************/
@@ -62,6 +66,10 @@ const std::string CCI_SwarmanoidRobotState::RAB_ACTUATOR_XML_NAME   = "range_and
 
       CCI_RobotState::ApplyState();
 
+      if (m_bRefreshLeds && m_bIsUsingLeds) {
+                  m_bRefreshLeds = false;
+                  m_pcLedsActuator->SetAllColors( m_tActuatedLedColors );
+              }
    }
 
    /****************************************/

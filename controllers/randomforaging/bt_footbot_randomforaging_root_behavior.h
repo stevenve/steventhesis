@@ -11,6 +11,7 @@
 #include "../../behaviors/bt_footbot_phototaxis.h"
 #include "../../behaviors/bt_footbot_obstacle_avoidance.h"
 #include "../../behaviors/bt_footbot_observe_ground.h"
+#include "../../behaviors/bt_footbot_control_leds.h"
 
 using namespace argos;
 using namespace btfsm;
@@ -29,6 +30,7 @@ class CBTFootbotRandomForagingRootBehavior: public CCI_Behavior<CCI_FootBotState
 	CBTFootbotObstacleAvoidance* m_pcObstacleAvoidance;
 	CBTFootbotMotionControl* m_pcMotionControl;
 	CBTFootbotObserveGround* m_pcObserveGround;
+	CBTFootbotControlLeds* m_pcControlLeds;
 
 	CCI_FootBotState* c_robot_state;
 

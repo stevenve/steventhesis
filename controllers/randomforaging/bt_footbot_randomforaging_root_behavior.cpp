@@ -17,6 +17,7 @@ CBTFootbotRandomForagingRootBehavior::CBTFootbotRandomForagingRootBehavior(CCI_R
 	m_pcObstacleAvoidance = new CBTFootbotObstacleAvoidance(c_robot_data);
 	m_pcMotionControl = new CBTFootbotMotionControl(c_robot_data);
 	m_pcObserveGround = new CBTFootbotObserveGround(c_robot_data);
+	m_pcControlLeds = new CBTFootbotControlLeds(c_robot_data);
 }
 
 /****************************************/
@@ -38,6 +39,7 @@ void CBTFootbotRandomForagingRootBehavior::Init(CCI_FootBotState& state) {
 	m_pcObstacleAvoidance->Init(state);
 	m_pcMotionControl->Init(state);
 	m_pcObserveGround->Init(state);
+	m_pcControlLeds->Init(state);
 }
 
 /****************************************/
@@ -86,18 +88,21 @@ void CBTFootbotRandomForagingRootBehavior::Reset(CCI_FootBotState& c_robot_state
 /****************************************/
 
 void CBTFootbotRandomForagingRootBehavior::ReturnToNest() {
+	m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::GREEN);
+
 	m_pcPhototaxis->SetAntiPhototaxis(false);
 	m_pcPhototaxis->Step(*c_robot_state);
 	m_pcObstacleAvoidance->Step(*c_robot_state);
 
 	CVector2 tmp = m_pcObstacleAvoidance->GetVector();
-	tmp += m_pcPhototaxis->GetVector();
+	tmp += 200.0f * m_pcPhototaxis->GetVector();
 
 	m_pcMotionControl->ComputeSpeedFromForce(tmp);
 	m_pcMotionControl->Step(*c_robot_state);
 }
 
 void CBTFootbotRandomForagingRootBehavior::Explore() {
+
 	m_pcObstacleAvoidance->Step(*c_robot_state);
 	m_pcRandomWalk->Step(*c_robot_state);
 	m_pcPhototaxis->SetAntiPhototaxis(true);
@@ -112,6 +117,8 @@ void CBTFootbotRandomForagingRootBehavior::Explore() {
 }
 
 void CBTFootbotRandomForagingRootBehavior::ExitNest() {
+	m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+
 	m_pcObstacleAvoidance->Step(*c_robot_state);
 	m_pcPhototaxis->SetAntiPhototaxis(true);
 	m_pcPhototaxis->Step(*c_robot_state);

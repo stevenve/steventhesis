@@ -35,6 +35,7 @@ namespace argos {
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_sensor.h>
 //#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_range_and_bearing_actuator.h>
 #include <argos3/plugins/robots/generic/control_interface/ci_range_and_bearing_actuator.h>
+#include <argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h>
 
 namespace argos {
 
@@ -58,11 +59,21 @@ namespace argos {
                 m_bIsUsingRABSensor        (false),
 
                 /** Initialize all the actuators */
+                m_pcLedsActuator				(NULL),
                 m_pcRABActuator            (NULL),
 
                 /** Initialize all actuators booleans */
-                m_bIsUsingRABActuator      (false) {
+                m_bIsUsingLeds                    (false),
+                m_bIsUsingRABActuator      (false),
+
+                /** Initialize all actuators refresh booleans */
+                m_bRefreshLeds                         (false){
                 ::memset(&m_tRABPacketDataToSend, 0, sizeof(CByteArray));
+
+                /** Initialize the actuated values */
+                m_tActuatedLedColors = CCI_LEDsActuator::TSettings(NUM_LEDS);
+                for (UInt8 i = 0; i < NUM_LEDS; i++)
+                	m_tActuatedLedColors[i] = CColor::BLACK;
             }
 
             /**
@@ -93,12 +104,18 @@ namespace argos {
 
                     /** Copy the references to the actuators */
                     m_pcRABActuator = c_state.m_pcRABActuator;
+                    m_pcLedsActuator            = c_state.m_pcLedsActuator;
 
                     /** Copy the actuators booleans */
                     m_bIsUsingRABActuator = c_state.m_bIsUsingRABActuator;
+                    m_bIsUsingLeds                    = c_state.m_bIsUsingLeds;
+
+                    /** Copy the actuators refresh booleans */
+                    m_bRefreshLeds			= c_state.m_bRefreshLeds;
 
                     /** Copy the actuated commands */
                    m_tRABPacketDataToSend = c_state.m_tRABPacketDataToSend;
+                   m_tActuatedLedColors                  = c_state.m_tActuatedLedColors;
 
                 }
 
@@ -186,6 +203,78 @@ namespace argos {
                             ::memset(&m_tRABPacketDataToSend, 0, sizeof(CByteArray));
                         }
 
+                        /**
+                                 *
+                                 * @brief Sets the color for the specified LED
+                                 * notice that the actual color will be set in the ApplyState() method
+                                 *
+                                 * @param un_index index of the LED to be set
+                                 * @param c_color color to be set
+                                 * @see CColor
+                                 *
+                                 **/
+                                inline virtual void SetSingleLedColor(UInt8 un_index, const CColor& c_color)
+                                {
+                                    CHECK_IS_ACTUATOR_USED_HELPER(LEDS_ACTUATOR_XML_NAME, m_bIsUsingLeds, "SetSingleLedColor");
+                                    m_bRefreshLeds = true;
+                                    m_tActuatedLedColors[un_index] = CColor(c_color.GetRed(), c_color.GetGreen(), c_color.GetBlue(), c_color.GetAlpha());
+                                }
+
+                                /**
+                                         *
+                                         * @brief Sets the color for all the LEDs
+                                         * notice that the actual color will be set in the ApplyState() method
+                                         *
+                                         * @param c_color color to be set
+                                         * @see CColor
+                                         *
+                                         **/
+                                        inline virtual void SetAllLedsColor(const CColor& c_color)
+                                        {
+                                            CHECK_IS_ACTUATOR_USED_HELPER(LEDS_ACTUATOR_XML_NAME, m_bIsUsingLeds, "SetAllLedsColor");
+                                            m_bRefreshLeds = true;
+                                            for (UInt8 i = 0; i < NUM_LEDS; i++) {
+                                                m_tActuatedLedColors[i] = CColor(c_color.GetRed(), c_color.GetGreen(), c_color.GetBlue(), c_color.GetAlpha());
+                                            }
+                                        }
+
+                                        /**
+                                                 *
+                                                 * @brief Sets the intensity for the specified LED
+                                                 * notice that the actual intensity will be set in the ApplyState() method
+                                                 *
+                                                 * @param un_index index of the LED to be set
+                                                 * @param un_intensity intensity of the color (0-255)
+                                                 * @see CColor
+                                                 * @see CCI_FootBotLedsActuator
+                                                 *
+                                                 **/
+                                                inline virtual void SetSingleLedIntensity(UInt8 un_index, UInt8 un_intensity)
+                                                {
+                                                    CHECK_IS_ACTUATOR_USED_HELPER(LEDS_ACTUATOR_XML_NAME, m_bIsUsingLeds, "SetSingleLedIntensity");
+                                                    m_bRefreshLeds = true;
+                                                    m_tActuatedLedColors[un_index].SetAlpha(un_intensity);
+                                                }
+
+                                                /**
+                                                 *
+                                                 * @brief Sets the intensity for all the LEDs
+                                                 * notice that the actual intensity will be set in the ApplyState() method
+                                                 *
+                                                 * @param un_intensity intensity of the color (0-255)
+                                                 * @see CColor
+                                                 * @see CCI_FootBotLedsActuator
+                                                 *
+                                                 **/
+                                                inline virtual void SetAllLedsIntensity(UInt8 un_intensity)
+                                                {
+                                                    CHECK_IS_ACTUATOR_USED_HELPER(LEDS_ACTUATOR_XML_NAME, m_bIsUsingLeds, "SetAllLedsIntensity");
+                                                    m_bRefreshLeds = true;
+                                                    for (UInt32 i=0; i < NUM_LEDS; i++) {
+                                                        m_tActuatedLedColors[i].SetAlpha(un_intensity);
+                                                    }
+                                                }
+
                         /////////////////////////////////////////////////////////////////////////////////////////////////
                         //   ACTUATORS GETTERS METHODS
                         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +292,44 @@ namespace argos {
                             return m_tRABPacketDataToSend;
                         }
 
+                        /**
+                                 *
+                                 * @brief Returns the current target color for the specified LED
+                                 * notice that the actual color could be different
+                                 *
+                                 * @param un_index index of the target LED
+                                 * @return target led color
+                                 * @see CColor
+                                 * @see CCI_FootBotLedsActuator
+                                 *
+                                 **/
+                                inline virtual CColor GetActuatedSingleLedColor(UInt8 un_index)
+                                {
+                                    CHECK_IS_ACTUATOR_USED_HELPER(LEDS_ACTUATOR_XML_NAME, m_bIsUsingLeds, "GetSingleActuatedLedColor");
+                                    return m_tActuatedLedColors[un_index];
+                                }
+
+                                /**
+                                 *
+                                 * @brief Returns the current target color for all the LEDs
+                                 * notice that the actual colors could be different
+                                 *
+                                 * @return target led color
+                                 * @see CColor
+                                 * @see CCI_FootBotLedsActuator
+                                 *
+                                 **/
+                                inline virtual CCI_LEDsActuator::TSettings& GetActuatedAllLedColors()
+                                {
+                                    CHECK_IS_ACTUATOR_USED_HELPER(LEDS_ACTUATOR_XML_NAME, m_bIsUsingLeds, "GetAllActuatedLedColors");
+                                    return m_tActuatedLedColors;
+                                }
+
+                                /** Number of LEDs */
+                                        static const UInt8 NUM_LEDS;
+
                     protected:
+
 
                         /////////////////////////////////////////////////////////////////////////////////////////////////
                         //    SENSORS
@@ -224,15 +350,22 @@ namespace argos {
 
                         /** References to the actuators */
                         CCI_RangeAndBearingActuator* m_pcRABActuator;
+                        CCI_LEDsActuator*            m_pcLedsActuator;
 
                         /** Actuators booleans */
                         bool m_bIsUsingRABActuator;
+                        bool m_bIsUsingLeds;
+
+                        /** Actuator refresh booleans */
+                        bool m_bRefreshLeds;
 
                         /** Actuators commands variables */
                         CByteArray m_tRABPacketDataToSend;
+                        CCI_LEDsActuator::TSettings   m_tActuatedLedColors;
 
                         /* XML actuator names */
                         static const std::string RAB_ACTUATOR_XML_NAME;
+                        static const std::string LEDS_ACTUATOR_XML_NAME;
     };
 
 }

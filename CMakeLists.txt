@@ -16,6 +16,7 @@ set(bt_footbot_simple_controller_IMPLEMENTATIONS
   behaviors/bt_footbot_phototaxis.cpp
   behaviors/bt_footbot_obstacle_avoidance.cpp
   behaviors/bt_footbot_observe_ground.cpp
+  behaviors/bt_footbot_control_leds.cpp
   #common/footbot_constants.cpp
   loop_functions/recruitment_loop_functions.cpp
 )
