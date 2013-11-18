@@ -1,10 +1,12 @@
 #include "bt_footbot_obstacle_avoidance.h"
 
+#define BEHAVIOR_NAME "[CBTFootbotObstacleAvoidance]: "
+
 /****************************************/
 /****************************************/
 
 CBTFootbotObstacleAvoidance::CBTFootbotObstacleAvoidance(CCI_RobotData<CCI_FootBotState>* c_robot_data) :
-			CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_proximal_control"){
+			CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_obstacle_avoidance"){
 	// Get data:
 	m_pcRobotData = c_robot_data;
 	//m_cCameraBlobs.clear();
@@ -185,9 +187,16 @@ Real CBTFootbotObstacleAvoidance::CalculateLennardJonesPotentialForce(Real f_dis
 /****************************************/
 
 CVector2& CBTFootbotObstacleAvoidance::GetVector() {
-	//return m_cObstacleRepulsionVector;
 	m_cObstacleRepulsionVectorTotal = m_cObstacleRepulsionVector + 1.0f * m_cObstacleRepulsionVectorRAB;
 	return m_cObstacleRepulsionVectorTotal;
+}
+
+CVector2& CBTFootbotObstacleAvoidance::GetObstacleRepulsionVector() {
+	return m_cObstacleRepulsionVector;
+}
+
+CVector2& CBTFootbotObstacleAvoidance::GetRABRepulsionVector() {
+	return m_cObstacleRepulsionVectorRAB;
 }
 
 /****************************************/

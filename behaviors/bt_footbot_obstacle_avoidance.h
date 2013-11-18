@@ -27,7 +27,8 @@ class CBTFootbotObstacleAvoidance: public CCI_Behavior<CCI_FootBotState> , publi
 
 //		virtual CRadians& GetObstacleRepulsionAngle();
 		virtual CVector2& GetVector();
-
+		virtual CVector2& GetObstacleRepulsionVector();
+		virtual CVector2& GetRABRepulsionVector();
 //		virtual void SetNoiseFactor(Real fNoise);
 
 		virtual void Destroy(CCI_FootBotState& cRobotState);

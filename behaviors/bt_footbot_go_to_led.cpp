@@ -2,7 +2,7 @@
 #include <argos3/core/utility/datatypes/color.h>
 #include <argos3/core/utility/math/angles.h>
 
-#define BEHAVIOR_NAME "[CBTFootbotGoToSource]: "
+#define BEHAVIOR_NAME "[CBTFootbotGoToLED]: "
 
 #include "bt_footbot_go_to_led.h"
 
@@ -16,7 +16,7 @@
 /****************************************/
 
 CBTFootbotGoToLED::CBTFootbotGoToLED(CCI_RobotData<CCI_FootBotState>* c_robot_data) :
-    CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_go_to_source") {
+    CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_go_to_LED") {
     m_cAngleFromSource = CRadians::ZERO;
     m_fDistanceFromLED = 100000.0;
     m_color = CColor::YELLOW;

@@ -16,7 +16,7 @@
 /****************************************/
 
 CBTFootbotPhototaxis::CBTFootbotPhototaxis(CCI_RobotData<CCI_FootBotState>* c_robot_data) :
-	CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_get_light_direction")
+	CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_phototaxis")
 	//m_cRandomNoiseRange(-0.0000001, 0.0000001), m_cRandomNoiseGoalRange(-0.0000001, 0.0000001)
 	{
 

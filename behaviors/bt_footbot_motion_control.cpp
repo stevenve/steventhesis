@@ -12,9 +12,9 @@
 #define DEBUG_STATE()
 
 
-const UInt8 CBTFootbotMotionControl::MOTION_CONTROL_EROL = 0;
-const UInt8 CBTFootbotMotionControl::MOTION_CONTROL_CMC = 1;
-const UInt8 CBTFootbotMotionControl::MOTION_CONTROL_VMC = 2;
+//const UInt8 CBTFootbotMotionControl::MOTION_CONTROL_EROL = 0;
+//const UInt8 CBTFootbotMotionControl::MOTION_CONTROL_CMC = 1;
+//const UInt8 CBTFootbotMotionControl::MOTION_CONTROL_VMC = 2;
 
 /****************************************/
 /****************************************/
@@ -22,12 +22,12 @@ const UInt8 CBTFootbotMotionControl::MOTION_CONTROL_VMC = 2;
 CBTFootbotMotionControl::CBTFootbotMotionControl(CCI_RobotData<CCI_FootBotState>* c_robot_data) :
 	CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_motion_control"),
 	m_cRandomNoiseRange(-0.0000001, 0.0000001) {
-	m_pcRNG = CRandom::CreateRNG("argos");
+	//m_pcRNG = CRandom::CreateRNG("argos");
 	m_fLeftSpeed = 0.0;
 	m_fRightSpeed = 0.0;
 
-	m_fKCMCErol = 0.1;
-	m_fCMCForwardSpeed = 5.0;
+	//m_fKCMCErol = 0.1;
+	//m_fCMCForwardSpeed = 5.0;
 	//m_fWheelsDistance = 0.5;
 	m_fWheelsDistance = 14.0;
 	//m_fWheelsDistance = 5.0; // With sacomm paper
@@ -36,7 +36,7 @@ CBTFootbotMotionControl::CBTFootbotMotionControl(CCI_RobotData<CCI_FootBotState>
 
 	m_fForwardSpeed = 0.001;
 	m_fAngularSpeed = 0.0;
-	m_fLinearKVMC = 1.0;
+	m_fLinearKVMC = 25.0;
 	m_fAngularKVMC = 0.5;
 	m_fForwardSaturation = 25.0;
 	//m_fForwardSaturation = 0.5;
@@ -45,7 +45,7 @@ CBTFootbotMotionControl::CBTFootbotMotionControl(CCI_RobotData<CCI_FootBotState>
 	m_bSaturateSpeed = true;
 	m_bForwardOnly = true;
 
-	m_unMotionControlType = MOTION_CONTROL_VMC;
+	//m_unMotionControlType = MOTION_CONTROL_VMC;
 
 	m_fNoiseFactor = 0.0000001;
 	m_cRandomNoiseRange.Set(-m_fNoiseFactor * CRadians::PI.GetValue(), m_fNoiseFactor * CRadians::PI.GetValue());
@@ -64,14 +64,14 @@ CBTFootbotMotionControl::~CBTFootbotMotionControl() {
 void CBTFootbotMotionControl::Init(CCI_FootBotState& c_robot_state) {
 	DEBUG("Init()");
 	/* create random generator */
-	m_pcRNG = CRandom::CreateRNG("argos");
+	//m_pcRNG = CRandom::CreateRNG("argos");
 }
 
 /****************************************/
 /****************************************/
 
 void CBTFootbotMotionControl::Step(CCI_FootBotState& c_robot_state) {
-	DEBUG("Setting speeds. Left: " << m_fLeftSpeed << " Right: " << m_fRightSpeed);
+
 	c_robot_state.SetWheelsLinearVelocity(m_fLeftSpeed, m_fRightSpeed);
 }
 
@@ -94,20 +94,7 @@ Real CBTFootbotMotionControl::SaturateSpeed(Real f_original_speed, Real f_satura
 
 void CBTFootbotMotionControl::ComputeSpeedFromForce(CVector2& cForce){
 
-	switch(m_unMotionControlType){
-		case MOTION_CONTROL_EROL:{
-			ErolMotionControl(cForce);
-			break;
-		}
-		case MOTION_CONTROL_CMC: {
-			CMC(cForce);
-			break;
-		}
-		case MOTION_CONTROL_VMC: {
-			VMC(cForce);
-			break;
-		}
-	}
+	VMC(cForce);
 
 	UpdateWheelSpeeds();
 }
@@ -131,7 +118,7 @@ void CBTFootbotMotionControl::VMC(CVector2& c_force) {
 /****************************************/
 /****************************************/
 
-void CBTFootbotMotionControl::CMC(CVector2& c_force) {
+/*void CBTFootbotMotionControl::CMC(CVector2& c_force) {
 	m_fForwardSpeed = m_fCMCForwardSpeed;
 	m_fAngularSpeed = m_fKCMCErol * c_force.Angle().GetValue();
 
@@ -142,12 +129,12 @@ void CBTFootbotMotionControl::CMC(CVector2& c_force) {
 	if (m_fForwardSpeed < 0.0 && m_bForwardOnly) {
 		m_fForwardSpeed = 0.0;
 	}
-}
+}*/
 
 /****************************************/
 /****************************************/
 
-void CBTFootbotMotionControl::ErolMotionControl(CVector2& c_force) {
+/*void CBTFootbotMotionControl::ErolMotionControl(CVector2& c_force) {
 	CRadians c_target_angle = c_force.Angle();
 	Real fDotProduct = 0.0;
 
@@ -162,15 +149,15 @@ void CBTFootbotMotionControl::ErolMotionControl(CVector2& c_force) {
 
 	m_fAngularSpeed = m_fKCMCErol * c_target_angle.GetValue();
 	m_fForwardSpeed = fDotProduct * m_fCMCForwardSpeed;
-}
+}*
 
 /****************************************/
 /****************************************/
 
 void CBTFootbotMotionControl::UpdateWheelSpeeds(){
-	Real fNoise = m_pcRNG->Uniform(m_cRandomNoiseRange);
+	//Real fNoise = m_pcRNG->Uniform(m_cRandomNoiseRange);
 	//LOG << "Noise: " << fNoise << std::endl;
-	m_fAngularSpeed+=fNoise;
+	//m_fAngularSpeed+=fNoise;
 
 	if (m_bSaturateSpeed) {
 		m_fForwardSpeed = SaturateSpeed(m_fForwardSpeed,m_fForwardSaturation);
@@ -193,31 +180,31 @@ void CBTFootbotMotionControl::GetComputedWheelsSpeed(Real* fLeftSpeed, Real* fRi
 /****************************************/
 /****************************************/
 
-void CBTFootbotMotionControl::SetForwardVelocity(Real fForwardVelocity){
+/*void CBTFootbotMotionControl::SetForwardVelocity(Real fForwardVelocity){
 	m_fCMCForwardSpeed = fForwardVelocity;
-}
+}*/
 
 /****************************************/
 /****************************************/
 
-void CBTFootbotMotionControl::SetWheelsDistance(Real fWheelsDistance){
+/*void CBTFootbotMotionControl::SetWheelsDistance(Real fWheelsDistance){
 	m_fWheelsDistance = fWheelsDistance;
-}
+}*/
 
 /****************************************/
 /****************************************/
 
-void CBTFootbotMotionControl::SetProportionalFactor(Real fKProp){
+/*void CBTFootbotMotionControl::SetProportionalFactor(Real fKProp){
 	m_fKCMCErol = fKProp;
-}
+}*/
 
 /****************************************/
 /****************************************/
 
-void CBTFootbotMotionControl::SetNoiseFactor(Real fNoise){
+/*void CBTFootbotMotionControl::SetNoiseFactor(Real fNoise){
 	m_fNoiseFactor = fNoise;
 	m_cRandomNoiseRange.Set(-m_fNoiseFactor * CRadians::PI.GetValue(), m_fNoiseFactor * CRadians::PI.GetValue());
-}
+}*/
 
 /****************************************/
 /****************************************/

@@ -29,18 +29,18 @@ private:
 	bool m_bSaturateSpeed;
 	bool m_bForwardOnly;
 
-	Real m_fKCMCErol;
-	Real m_fCMCForwardSpeed;
+	//Real m_fKCMCErol;
+	//Real m_fCMCForwardSpeed;
 
 	Real m_fLinearKVMC;
 	Real m_fAngularKVMC;
 
-	UInt32 m_unMotionControlType;
+	//UInt32 m_unMotionControlType;
 
 	virtual Real SaturateSpeed(Real f_original_speed, Real f_saturation_value);
 
 	/** Random Numbers Generator */
-	CRandom::CRNG* m_pcRNG;
+	//CRandom::CRNG* m_pcRNG;
 
 	Real m_fNoiseFactor;
 
@@ -62,36 +62,36 @@ public:
 
     virtual void ComputeSpeedFromForce(CVector2& cForce);
 
-    virtual void SetForwardVelocity(Real fForwardVelocity);
+    //virtual void SetForwardVelocity(Real fForwardVelocity);
     virtual inline void SetBiasForwardSpeed(Real fBiasForwardSpeed){
     	m_fBiasForwardSpeed = fBiasForwardSpeed;
     }
-    virtual void SetWheelsDistance(Real fWheelsDistance);
-    virtual void SetProportionalFactor(Real fKProp);
+    //virtual void SetWheelsDistance(Real fWheelsDistance);
+    //virtual void SetProportionalFactor(Real fKProp);
     virtual inline void SetPhysicsBasedParameters(bool b_saturate_speed, bool b_forward_only, Real f_k_cmc, Real f_cmc_forward_speed, Real f_linear_k_vmc, Real f_angular_k_vmc){
     	m_bSaturateSpeed = b_saturate_speed;
     	m_bForwardOnly = b_forward_only;
-    	m_fKCMCErol = f_k_cmc;
-    	m_fCMCForwardSpeed = f_cmc_forward_speed;
+    	//m_fKCMCErol = f_k_cmc;
+    	//m_fCMCForwardSpeed = f_cmc_forward_speed;
     	m_fLinearKVMC = f_linear_k_vmc;
     	m_fAngularKVMC = f_angular_k_vmc;
     }
 
-    virtual inline void SetMotionControlType(UInt32 un_type){
+    /*virtual inline void SetMotionControlType(UInt32 un_type){
     	m_unMotionControlType = un_type;
-    }
+    }*/
 
-    virtual void SetNoiseFactor(Real fNoise);
+    //virtual void SetNoiseFactor(Real fNoise);
 
 private:
-    virtual void ErolMotionControl(CVector2& cForce);
-    virtual void CMC(CVector2& cForce);
+    //virtual void ErolMotionControl(CVector2& cForce);
+    //virtual void CMC(CVector2& cForce);
     virtual void VMC(CVector2& cForce);
     virtual void UpdateWheelSpeeds();
 
-		static const UInt8 MOTION_CONTROL_EROL;
-		static const UInt8 MOTION_CONTROL_CMC;
-		static const UInt8 MOTION_CONTROL_VMC;
+		//static const UInt8 MOTION_CONTROL_EROL;
+		//static const UInt8 MOTION_CONTROL_CMC;
+		//static const UInt8 MOTION_CONTROL_VMC;
 
 
 };

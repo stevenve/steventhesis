@@ -1,10 +1,11 @@
 #include "bt_footbot_randomwalk.h"
+#define BEHAVIOR_NAME "[CBTFootbotRandomWalk]: "
 
 /****************************************/
 /****************************************/
 
 CBTFootbotRandomWalk::CBTFootbotRandomWalk(CCI_RobotData<CCI_FootBotState>* c_robot_data) :
-			CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_proximal_control"),
+			CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_random_walk"),
 			m_cRandomAngle(-0.0000001f, 0.0000001f){
 
 	m_pcRNG = NULL;
@@ -14,7 +15,7 @@ CBTFootbotRandomWalk::CBTFootbotRandomWalk(CCI_RobotData<CCI_FootBotState>* c_ro
 
 	m_cRandomAngle.Set(-m_fNoiseFactor * CRadians::PI.GetValue(), m_fNoiseFactor * CRadians::PI.GetValue());
 	m_pcMotionControl = new CBTFootbotMotionControl(c_robot_data);
-	m_pcMotionControl->SetBiasForwardSpeed(2.0f);
+	//m_pcMotionControl->SetBiasForwardSpeed(2.0f);
 
 }
 
@@ -76,7 +77,7 @@ void CBTFootbotRandomWalk::StepAndGo(CCI_FootBotState& cRobotState) {
 
 /****************************************/
 /****************************************/
-CVector2 CBTFootbotRandomWalk::GetRandomWalkVector(){
+CVector2 CBTFootbotRandomWalk::GetVector(){
 	return m_cRandomWalkDirection;
 }
 

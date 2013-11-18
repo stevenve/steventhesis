@@ -40,6 +40,8 @@ namespace argos {
 #include <argos3/plugins/robots/generic/control_interface/ci_colored_blob_omnidirectional_camera_sensor.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
+#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_base_ground_sensor.h>
+#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h>
 
 /* Actuator includes */
 #include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
@@ -64,14 +66,19 @@ namespace argos {
             CCI_SwarmanoidRobotState(pc_controller),
 
             /** Initialize all the sensors */
+            m_pcBaseGroundSensor            (NULL),
             m_pcOmnidirectionalCameraSensor(NULL),
             m_pcLightSensor                 (NULL),
             m_pcProximitySensor             (NULL),
+            m_pcMotorGroundSensor           (NULL),
 
             /** Initialize all sensors booleans */
+            m_bIsUsingBaseGroundSensor              (false),
             m_bIsUsingOmnidirectionalCameraSensor           (false),
             m_bIsUsingLightSensor                   (false),
             m_bIsUsingProximitySensor               (false),
+            m_tLightSensorReadings			(NULL),
+            m_bIsUsingMotorGroundSensor             (false),
 
             /** Initialize all the actuators */
             m_pcWheelsActuator          (NULL),
@@ -109,14 +116,18 @@ namespace argos {
                 CCI_SwarmanoidRobotState::operator=(c_footbot_state);
 
             	/** Copy the references to the sensors */
-            	m_pcOmnidirectionalCameraSensor         = c_footbot_state.m_pcOmnidirectionalCameraSensor;
+                m_pcBaseGroundSensor            = c_footbot_state.m_pcBaseGroundSensor;
+                m_pcOmnidirectionalCameraSensor         = c_footbot_state.m_pcOmnidirectionalCameraSensor;
             	m_pcLightSensor                 = c_footbot_state.m_pcLightSensor;
             	m_pcProximitySensor             = c_footbot_state.m_pcProximitySensor;
+            	m_pcMotorGroundSensor           = c_footbot_state.m_pcMotorGroundSensor;
 
             	/** Copy the sensors booleans */
+            	m_bIsUsingBaseGroundSensor              = c_footbot_state.m_bIsUsingBaseGroundSensor;
             	m_bIsUsingOmnidirectionalCameraSensor           = c_footbot_state.m_bIsUsingOmnidirectionalCameraSensor;
             	m_bIsUsingLightSensor                   = c_footbot_state.m_bIsUsingLightSensor;
             	m_bIsUsingProximitySensor               = c_footbot_state.m_bIsUsingProximitySensor;
+            	m_bIsUsingMotorGroundSensor             = c_footbot_state.m_bIsUsingMotorGroundSensor;
 
             	/** Copy other sensor related variables */
             	m_tLightSensorReadings    = c_footbot_state.m_tLightSensorReadings;
@@ -179,6 +190,37 @@ namespace argos {
         //////////////////////////////////////////////////////////////////////////////////////////////
         //   SENSORS GETTER METHODS, SENSOR READINGS												//
         //////////////////////////////////////////////////////////////////////////////////////////////
+
+        /**
+                 *
+                 * @brief Returns the motor ground sensors readings
+                 * The 4 motor ground sensors are positioned underneath the foot-bot, between the 2 tracks
+                 *
+                 * @return the motor ground sensors readings
+                 * @see CCI_FootBotMotorGroundSensor
+                 *
+                 **/
+                inline virtual const CCI_FootBotMotorGroundSensor::TReadings& GetMotorGroundSensorReadings()
+                {
+                    CHECK_IS_SENSOR_USED_HELPER(MOTOR_GROUND_SENSOR_XML_NAME, m_bIsUsingMotorGroundSensor, "GetMotorGroundSensorReadings");
+                    return m_pcMotorGroundSensor->GetReadings();
+                }
+
+        /**
+        *
+        * @brief Returns the base ground sensors readings
+        * The 8 base ground sensors are positioned underneath the LED ring, where the proximity sensors are.
+        *
+        * @return the base ground sensors readings
+        * @see CCI_FootBotBaseGroundSensor
+        *
+        **/
+        inline virtual const CCI_FootBotBaseGroundSensor::TReadings& GetBaseGroundSensorReadings()
+        {
+        	CHECK_IS_SENSOR_USED_HELPER(BASE_GROUND_SENSOR_XML_NAME, m_bIsUsingBaseGroundSensor, "GetBaseGroundSensorReadings");
+        	return m_pcBaseGroundSensor->GetReadings();
+        }
+
 
         virtual inline const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& GetOmnidirectionalCameraReadings(){
                     CHECK_IS_SENSOR_USED_HELPER(OMNIDIRECTIONAL_CAMERA_SENSOR_XML_NAME, m_bIsUsingOmnidirectionalCameraSensor, "GetOmnidirectionalCameraBlobs");
@@ -286,22 +328,28 @@ namespace argos {
         /////////////
 
         /** References to the sensors */
+        CCI_FootBotBaseGroundSensor*            m_pcBaseGroundSensor;
         CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcOmnidirectionalCameraSensor;
         CCI_FootBotLightSensor*                 m_pcLightSensor;
         CCI_FootBotProximitySensor*             m_pcProximitySensor;
+        CCI_FootBotMotorGroundSensor*           m_pcMotorGroundSensor;
 
         /** Sensors booleans */
+        bool m_bIsUsingBaseGroundSensor;
         bool m_bIsUsingOmnidirectionalCameraSensor;
         bool m_bIsUsingLightSensor;
         bool m_bIsUsingProximitySensor;
+        bool m_bIsUsingMotorGroundSensor;
 
         /** Variables related to sensors */
         const CCI_FootBotLightSensor::TReadings*    m_tLightSensorReadings;
 
         /* XML sensor names */
+        static const std::string BASE_GROUND_SENSOR_XML_NAME;
         static const std::string OMNIDIRECTIONAL_CAMERA_SENSOR_XML_NAME;
         static const std::string LIGHT_SENSOR_XML_NAME;
         static const std::string PROXIMITY_SENSORS_XML_NAME;
+        static const std::string MOTOR_GROUND_SENSOR_XML_NAME;
 
         ///////////////
         //    ACTUATORS

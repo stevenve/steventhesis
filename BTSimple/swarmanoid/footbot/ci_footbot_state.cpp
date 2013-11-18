@@ -30,9 +30,11 @@
 namespace argos {
 
 	//XML sensors names
-    const std::string CCI_FootBotState::OMNIDIRECTIONAL_CAMERA_SENSOR_XML_NAME = "colored_blob_omnidirectional_camera";
+	const std::string CCI_FootBotState::BASE_GROUND_SENSOR_XML_NAME            = "footbot_base_ground";
+	const std::string CCI_FootBotState::OMNIDIRECTIONAL_CAMERA_SENSOR_XML_NAME = "colored_blob_omnidirectional_camera";
     const std::string CCI_FootBotState::LIGHT_SENSOR_XML_NAME                  = "footbot_light";
     const std::string CCI_FootBotState::PROXIMITY_SENSORS_XML_NAME             = "footbot_proximity";
+    const std::string CCI_FootBotState::MOTOR_GROUND_SENSOR_XML_NAME           = "footbot_motor_ground";
 
     //XML actuators names
     const std::string CCI_FootBotState::WHEELS_ACTUATOR_XML_NAME           = "differential_steering";
@@ -53,9 +55,11 @@ namespace argos {
         CCI_Sensor::TMap mapSensors = m_pcController->GetAllSensors();
         CCI_Sensor::TMap::const_iterator itSensors;
 
+        SENSOR_INIT_HELPER(BASE_GROUND_SENSOR_XML_NAME,             CCI_FootBotBaseGroundSensor,            m_pcBaseGroundSensor,               m_bIsUsingBaseGroundSensor);
         SENSOR_INIT_HELPER(OMNIDIRECTIONAL_CAMERA_SENSOR_XML_NAME,  CCI_ColoredBlobOmnidirectionalCameraSensor, m_pcOmnidirectionalCameraSensor,    m_bIsUsingOmnidirectionalCameraSensor);
         SENSOR_INIT_HELPER(LIGHT_SENSOR_XML_NAME,                   CCI_FootBotLightSensor,                 m_pcLightSensor,                    m_bIsUsingLightSensor);
         SENSOR_INIT_HELPER(PROXIMITY_SENSORS_XML_NAME,              CCI_FootBotProximitySensor,             m_pcProximitySensor,                m_bIsUsingProximitySensor);
+        SENSOR_INIT_HELPER(MOTOR_GROUND_SENSOR_XML_NAME,            CCI_FootBotMotorGroundSensor,           m_pcMotorGroundSensor,              m_bIsUsingMotorGroundSensor);
 
         ///////////////////////////////////////////////////////////////////
         //   INITIALIZE SENSOR RELATED VARIABLES

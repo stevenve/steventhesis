@@ -23,7 +23,7 @@ class CBTFootbotRandomWalk: public CCI_Behavior<CCI_FootBotState> , public FSM<s
 
 	virtual void StepAndGo(CCI_FootBotState& cRobotState);
 
-	virtual CVector2 GetRandomWalkVector();
+	virtual CVector2 GetVector();
 
 	virtual void Destroy(CCI_FootBotState& cRobotState);
 
