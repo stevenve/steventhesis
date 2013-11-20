@@ -15,6 +15,7 @@ CRecruitmentLoopFunctions::CRecruitmentLoopFunctions() :
    m_cForagingArena2SideY(1.5f, 2.5f),
    m_pcFloor(NULL),
    m_pcRNG(NULL),
+   m_nbCollectedFood(0),
    m_fFoodSquareRadius(0.0f){
 }
 
@@ -51,6 +52,9 @@ void CRecruitmentLoopFunctions::Init(TConfigurationNode& t_node) {
    catch(CARGoSException& ex) {
       THROW_ARGOSEXCEPTION_NESTED("Error parsing loop functions!", ex);
    }
+
+   m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
+   m_cOutput << "# clock\tcollected_food" << std::endl;
 }
 
 /****************************************/
@@ -62,13 +66,21 @@ void CRecruitmentLoopFunctions::Reset() {
       m_cFoodPos[i].Set(m_pcRNG->Uniform(m_cForagingArenaSideX),
                         m_pcRNG->Uniform(m_cForagingArenaSideY));
    }
+
+   m_nbCollectedFood = 0;
+   /* Close the file */
+      m_cOutput.close();
+      /* Open the file, erasing its contents */
+      m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
+      m_cOutput << "# clock\twalking\tresting\tcollected_food\tenergy" << std::endl;
 }
 
 /****************************************/
 /****************************************/
 
 void CRecruitmentLoopFunctions::Destroy() {
-
+	/* Close the file */
+	   m_cOutput.close();
 }
 
 /****************************************/
@@ -109,6 +121,7 @@ void CRecruitmentLoopFunctions::PreStep() {
             sFoodData.HasFoodItem = false;
             sFoodData.FoodItemIdx = 0;
             ++sFoodData.TotalFoodItems;
+            m_nbCollectedFood++;
             /* The floor texture must be updated */
             m_pcFloor->SetChanged();
          }
@@ -135,6 +148,8 @@ void CRecruitmentLoopFunctions::PreStep() {
          }
       }
    }
+   m_cOutput << GetSpace().GetSimulationClock() << "\t"
+                << m_nbCollectedFood << "\n";
 }
 
 /****************************************/

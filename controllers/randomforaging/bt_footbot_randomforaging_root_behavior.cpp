@@ -105,12 +105,12 @@ void CBTFootbotRandomForagingRootBehavior::Explore() {
 
 	m_pcObstacleAvoidance->Step(*c_robot_state);
 	m_pcRandomWalk->Step(*c_robot_state);
-	m_pcPhototaxis->SetAntiPhototaxis(true);
-	m_pcPhototaxis->Step(*c_robot_state);
+	//m_pcPhototaxis->SetAntiPhototaxis(true);
+	//m_pcPhototaxis->Step(*c_robot_state);
 
 	CVector2 tmp = m_pcObstacleAvoidance->GetVector();
     tmp += m_pcRandomWalk->GetVector();
-    tmp += 0.1f * m_pcPhototaxis->GetVector();
+    //tmp += 0.1f * m_pcPhototaxis->GetVector();
 
     m_pcMotionControl->ComputeSpeedFromForce(tmp);
     m_pcMotionControl->Step(*c_robot_state);

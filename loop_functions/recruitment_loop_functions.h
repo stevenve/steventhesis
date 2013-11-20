@@ -30,6 +30,10 @@ private:
    CFloorEntity* m_pcFloor;
    CRandom::CRNG* m_pcRNG;
    std::vector<CVector2> m_cFoodPos;
+   UInt32 m_nbCollectedFood;
+
+   std::string m_strOutput;
+   std::ofstream m_cOutput;
 
 };
 
