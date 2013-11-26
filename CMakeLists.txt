@@ -5,8 +5,8 @@
 #add_subdirectory(behaviors)
 
 set(bt_footbot_simple_controller_IMPLEMENTATIONS
-  controllers/randomforaging/bt_footbot_randomforaging_controller.cpp
-  controllers/randomforaging/bt_footbot_randomforaging_root_behavior.cpp
+  #controllers/randomforaging/bt_footbot_randomforaging_controller.cpp
+  #controllers/randomforaging/bt_footbot_randomforaging_root_behavior.cpp
   BTSimple/swarmanoid/footbot/ci_footbot_state.cpp
   BTSimple/swarmanoid/ci_swarmanoid_robot_state.cpp
   BTSimple/ci_robot_state.cpp
@@ -18,17 +18,26 @@ set(bt_footbot_simple_controller_IMPLEMENTATIONS
   behaviors/bt_footbot_observe_ground.cpp
   behaviors/bt_footbot_control_leds.cpp
   #common/footbot_constants.cpp
-  loop_functions/recruitment_loop_functions.cpp
+  #loop_functions/simple/simple_loop_functions.cpp
+  #loop_functions/recruitment/recruitment_loop_functions.cpp
+  #controllers/recruitment/bt_footbot_recruitment_controller.cpp
+  #controllers/recruitment/bt_footbot_recruitment_root_behavior.cpp
 )
 
-add_library(bt_footbot_simple SHARED ${bt_footbot_simple_controller_IMPLEMENTATIONS})
+add_library(bt_footbot_base SHARED ${bt_footbot_simple_controller_IMPLEMENTATIONS})
 
-target_link_libraries(bt_footbot_simple
-  argos3core_simulator
-  argos3plugin_simulator_actuators
-  argos3plugin_simulator_footbot
-  argos3plugin_simulator_genericrobot
-  argos3plugin_simulator_sensors
+target_link_libraries(bt_footbot_base
+/usr/lib/argos3/libargos3core_simulator.so
+  /usr/lib/argos3/libargos3plugin_simulator_actuators.so
+/usr/lib/argos3/libargos3plugin_simulator_footbot.so
+/usr/lib/argos3/libargos3plugin_simulator_genericrobot.so
+/usr/lib/argos3/libargos3plugin_simulator_sensors.so
+#  argos3core_simulator
+#  argos3plugin_simulator_actuators
+#  argos3plugin_simulator_footbot
+#  argos3plugin_simulator_genericrobot
+#  argos3plugin_simulator_sensors
 )
 
 add_subdirectory(loop_functions)
+add_subdirectory(controllers)

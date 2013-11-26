@@ -1,14 +1,14 @@
-#ifndef _CBTFOOTBOT_RANDOMFORAGING_CONTROLLER_H_
-#define _CBTFOOTBOT_RANDOMFORAGING_CONTROLLER_H_
+#ifndef _CBTFOOTBOT_RECRUITMENT_CONTROLLER_H_
+#define _CBTFOOTBOT_RECRUITMENT_CONTROLLER_H_
 
 #include "../../BTSimple/ci_behavior.h"
 #include "../../BTSimple/swarmanoid/footbot/ci_footbot_state.h"
 
-#include "bt_footbot_randomforaging_root_behavior.h"
+#include "bt_footbot_recruitment_root_behavior.h"
 
 
 
-class CBTFootbotRandomForagingController: public CCI_BehaviorController<CCI_FootBotState>
+class CBTFootbotRecruitmentController: public CCI_BehaviorController<CCI_FootBotState>
 {
 
 
@@ -25,8 +25,8 @@ public:
 
     virtual std::string GetRootBehaviorStateName();
 
-    virtual CBTFootbotRandomForagingRootBehavior* GetRootBehavior(){
-        return (CBTFootbotRandomForagingRootBehavior*)m_pcRootBehavior;
+    virtual CBTFootbotRecruitmentRootBehavior* GetRootBehavior(){
+        return (CBTFootbotRecruitmentRootBehavior*)m_pcRootBehavior;
     }
 
     /*
@@ -36,7 +36,8 @@ public:
     	      /* The three possible states in which the controller can be */
     	      enum EState {
     	         STATE_EXPLORING,
-    	         STATE_RETURN_TO_NEST
+    	         STATE_RETURN_TO_NEST,
+    	         STATE_GO_TO_FOOD
     	      } State;
 
     	      /* True when the robot is in the nest */
@@ -101,6 +102,7 @@ public:
      */
     void ReturnToNest(CCI_FootBotState& c_robot_state);
 
+    void GoToFood(CCI_FootBotState& c_robot_state);
 
 
 private:

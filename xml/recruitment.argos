@@ -16,7 +16,7 @@
   <!-- *************** -->
   <controllers>
 
-    <footbot_randomforaging_controller id="ffc"
+    <footbot_recruitment_controller id="ffc"
                                  library="build/problem/libbt_footbot_base.so">
       <actuators>
         <differential_steering implementation="default" />
@@ -31,7 +31,7 @@
 	<footbot_motor_ground implementation="rot_z_only" />
       </sensors>
 	<params><state/></params>
-    </footbot_randomforaging_controller>
+    </footbot_recruitment_controller>
 
   </controllers>
 
@@ -71,7 +71,7 @@
     <distribute>
       <position method="uniform" min="-2,-3.5,0" max="2,-2.5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
-      <entity quantity="20" max_trials="100">
+      <entity quantity="1" max_trials="100">
         <foot-bot id="fb">
           <controller config="ffc" />
         </foot-bot>
@@ -83,8 +83,8 @@
 <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="build/problem/loop_functions/simple/libsimple_loop_functions.so"
-                  label="simple_loop_functions">
+  <loop_functions library="build/problem/loop_functions/recruitment/librecruitment_loop_functions.so"
+                  label="recruitment_loop_functions">
     <foraging items="15"
               radius="0.1"
               energy_per_item="1000"
@@ -115,8 +115,8 @@
       <camera>
         <placement idx="0" position="0.300443,-0.0813248,2.3663" look_at="0.300855,-0.0613303,1.3665" lens_focal_length="7" />
       </camera>
-      <user_functions library="build/problem/loop_functions/simple/libsimple_loop_functions.so"
-                      label="simple_qt_user_functions" />
+      <user_functions library="build/problem/loop_functions/recruitment/librecruitment_loop_functions.so"
+                      label="recruitment_qt_user_functions" />
     </qt-opengl>
   </visualization>
 

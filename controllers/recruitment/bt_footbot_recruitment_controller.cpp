@@ -1,19 +1,19 @@
 //#include <argos3/core/utility/logging/argos_log.h>
 #include <argos3/core/control_interface/ci_controller.h>
 
-#include "bt_footbot_randomforaging_controller.h"
+#include "bt_footbot_recruitment_controller.h"
 
 
 using namespace argos;
 
 
-void CBTFootbotRandomForagingController::Init ( TConfigurationNode& t_tree)
+void CBTFootbotRecruitmentController::Init ( TConfigurationNode& t_tree)
 {
     // Get the robot data, state and the root behavior
 	m_pcRobotData = new CCI_RobotData<CCI_FootBotState>( (CCI_Controller*) this, (CCI_BehaviorController<CCI_FootBotState>*) this, t_tree );
 	m_pcState = new CCI_FootBotState((CCI_Controller*) this);
 	m_pcState->Init();
-	m_pcRootBehavior = new CBTFootbotRandomForagingRootBehavior(m_pcRobotData);
+	m_pcRootBehavior = new CBTFootbotRecruitmentRootBehavior(m_pcRobotData);
 	m_pcRobotData->SetRootBehavior( (CCI_Behavior<CCI_FootBotState>*) m_pcRootBehavior );
 
 	m_pcRootBehavior->Init( *m_pcState );
@@ -25,7 +25,7 @@ void CBTFootbotRandomForagingController::Init ( TConfigurationNode& t_tree)
 	    Reset();
 }
 
-void CBTFootbotRandomForagingController::ControlStep (  )
+void CBTFootbotRecruitmentController::ControlStep (  )
 {
 	switch(m_sStateData.State) {
 	      case SStateData::STATE_EXPLORING: {
@@ -36,6 +36,10 @@ void CBTFootbotRandomForagingController::ControlStep (  )
 	         ReturnToNest((CCI_FootBotState&) (*m_pcState));
 	         break;
 	      }
+	      case SStateData::STATE_GO_TO_FOOD: {
+	      	         GoToFood((CCI_FootBotState&) (*m_pcState));
+	      	         break;
+	      }
 	      default: {
 	         THROW_ARGOSEXCEPTION("Invalid State");
 	      }
@@ -45,19 +49,19 @@ void CBTFootbotRandomForagingController::ControlStep (  )
     CCI_BehaviorController<CCI_FootBotState>::ControlStep();
 }
 
-UInt32 CBTFootbotRandomForagingController::GetRootBehaviorStateID()
+UInt32 CBTFootbotRecruitmentController::GetRootBehaviorStateID()
 {
-	CBTFootbotRandomForagingRootBehavior* pcRootBehavior = (CBTFootbotRandomForagingRootBehavior*) m_pcRootBehavior;
+	CBTFootbotRecruitmentRootBehavior* pcRootBehavior = (CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior;
     return pcRootBehavior->GetStateID();
 }
 
-std::string CBTFootbotRandomForagingController::GetRootBehaviorStateName()
+std::string CBTFootbotRecruitmentController::GetRootBehaviorStateName()
 {
-	CBTFootbotRandomForagingRootBehavior* pcRootBehavior = (CBTFootbotRandomForagingRootBehavior*) m_pcRootBehavior;
+	CBTFootbotRecruitmentRootBehavior* pcRootBehavior = (CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior;
     return pcRootBehavior->GetStateName();
 }
 
-void CBTFootbotRandomForagingController::Destroy (  )
+void CBTFootbotRecruitmentController::Destroy (  )
 {
     // Clean up in the root behavior
     m_pcRootBehavior->Destroy(*m_pcState);
@@ -72,50 +76,62 @@ void CBTFootbotRandomForagingController::Destroy (  )
 /** state related methods
 /****************************************/
 
-CBTFootbotRandomForagingController::SFoodData::SFoodData() :
+CBTFootbotRecruitmentController::SFoodData::SFoodData() :
    HasFoodItem(false),
    FoodItemIdx(0),
    TotalFoodItems(0),
    LastFoodPosition(0,0){}
 
-void CBTFootbotRandomForagingController::SFoodData::Reset() {
+void CBTFootbotRecruitmentController::SFoodData::Reset() {
    HasFoodItem = false;
    FoodItemIdx = 0;
    TotalFoodItems = 0;
 }
 
-CBTFootbotRandomForagingController::SStateData::SStateData() : CurrentPosition(0,0){
+CBTFootbotRecruitmentController::SStateData::SStateData() : CurrentPosition(0,0){
 	State = STATE_EXPLORING;
 	InNest = true;
 }
 
-void CBTFootbotRandomForagingController::SStateData::Init(TConfigurationNode& t_node) {
+void CBTFootbotRecruitmentController::SStateData::Init(TConfigurationNode& t_node) {
 	State = STATE_EXPLORING;
 	InNest = false;
 }
 
-void CBTFootbotRandomForagingController::SStateData::Reset() {
+void CBTFootbotRecruitmentController::SStateData::Reset() {
    State = STATE_EXPLORING;
    InNest = true;
 }
 
-void CBTFootbotRandomForagingController::UpdateInNestState() {
+void CBTFootbotRecruitmentController::UpdateInNestState() {
 
-	if(((CBTFootbotRandomForagingRootBehavior*) m_pcRootBehavior)->InNest())
+	if(((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->InNest())
 		m_sStateData.InNest = true;
 	else
 		m_sStateData.InNest = false;
 }
 
-void CBTFootbotRandomForagingController::ReturnToNest(CCI_FootBotState& c_robot_state) {
+void CBTFootbotRecruitmentController::ReturnToNest(CCI_FootBotState& c_robot_state) {
    UpdateInNestState();
    if(m_sStateData.InNest)
-	   m_sStateData.State = SStateData::STATE_EXPLORING;
+	   m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
+	   //m_sStateData.State = SStateData::STATE_EXPLORING; // TODO make chance to explore, chance to go back to food
    else
-	   ((CBTFootbotRandomForagingRootBehavior*) m_pcRootBehavior)->ReturnToNest();
+	   ((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->ReturnToNest();
 }
 
-void CBTFootbotRandomForagingController::Explore(CCI_FootBotState& c_robot_state) {
+void CBTFootbotRecruitmentController::GoToFood(CCI_FootBotState& c_robot_state) {
+	   /* So, do we return to the nest now? */
+	   if(m_sFoodData.HasFoodItem) {
+	      //m_pcLEDs->SetAllColors(CColor::RED);
+	      m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
+	   }else{
+		   //CVector2 tmp = m_sStateData.CurrentPosition - m_sFoodData.LastFoodPosition;
+		   ((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->GoToVector(m_sFoodData.LastFoodPosition);
+	   }
+}
+
+void CBTFootbotRecruitmentController::Explore(CCI_FootBotState& c_robot_state) {
    /* We switch to 'return to nest' if we have a food item
     */
    bool bReturnToNest(false);
@@ -153,10 +169,10 @@ void CBTFootbotRandomForagingController::Explore(CCI_FootBotState& c_robot_state
          //SetWheelSpeedsFromVector(
            // m_sWheelTurningParams.MaxSpeed * cDiffusion -
             //m_sWheelTurningParams.MaxSpeed * 0.25f * CalculateVectorToLight());
-          ((CBTFootbotRandomForagingRootBehavior*) m_pcRootBehavior)->ExitNest();
+          ((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->ExitNest();
       }
       else {
-    	((CBTFootbotRandomForagingRootBehavior*) m_pcRootBehavior)->Explore();
+    	((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->Explore();
          /* Use the diffusion vector only */
         // SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
       }
@@ -166,5 +182,5 @@ void CBTFootbotRandomForagingController::Explore(CCI_FootBotState& c_robot_state
 /*
  * To allow dynamic loading of this controller
  */
-REGISTER_CONTROLLER( CBTFootbotRandomForagingController, "footbot_randomforaging_controller" );
+REGISTER_CONTROLLER( CBTFootbotRecruitmentController, "footbot_recruitment_controller" );
 
