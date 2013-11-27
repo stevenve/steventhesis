@@ -27,16 +27,11 @@ set(bt_footbot_simple_controller_IMPLEMENTATIONS
 add_library(bt_footbot_base SHARED ${bt_footbot_simple_controller_IMPLEMENTATIONS})
 
 target_link_libraries(bt_footbot_base
-/usr/lib/argos3/libargos3core_simulator.so
-  /usr/lib/argos3/libargos3plugin_simulator_actuators.so
-/usr/lib/argos3/libargos3plugin_simulator_footbot.so
-/usr/lib/argos3/libargos3plugin_simulator_genericrobot.so
-/usr/lib/argos3/libargos3plugin_simulator_sensors.so
-#  argos3core_simulator
-#  argos3plugin_simulator_actuators
-#  argos3plugin_simulator_footbot
-#  argos3plugin_simulator_genericrobot
-#  argos3plugin_simulator_sensors
+  argos3core_simulator
+  argos3plugin_simulator_actuators
+  argos3plugin_simulator_footbot
+  argos3plugin_simulator_genericrobot
+  argos3plugin_simulator_sensors
 )
 
 add_subdirectory(loop_functions)

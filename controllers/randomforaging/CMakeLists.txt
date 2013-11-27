@@ -13,11 +13,11 @@ add_library(bt_footbot_randomforaging SHARED bt_footbot_randomforaging_controlle
 target_link_libraries(bt_footbot_randomforaging
   bt_footbot_base
 #  behavioral_toolkit
-/usr/lib/argos3/libargos3core_simulator.so
-  /usr/lib/argos3/libargos3plugin_simulator_actuators.so
-/usr/lib/argos3/libargos3plugin_simulator_footbot.so
-/usr/lib/argos3/libargos3plugin_simulator_genericrobot.so
-/usr/lib/argos3/libargos3plugin_simulator_sensors.so
+  argos3core_simulator
+  argos3plugin_simulator_actuators
+  argos3plugin_simulator_footbot
+  argos3plugin_simulator_genericrobot
+  argos3plugin_simulator_sensors
 )
 
 
