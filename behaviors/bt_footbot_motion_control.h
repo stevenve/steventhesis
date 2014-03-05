@@ -29,13 +29,13 @@ private:
 	bool m_bSaturateSpeed;
 	bool m_bForwardOnly;
 
-	//Real m_fKCMCErol;
-	//Real m_fCMCForwardSpeed;
+	Real m_fKCMCErol;
+	Real m_fCMCForwardSpeed;
 
 	Real m_fLinearKVMC;
 	Real m_fAngularKVMC;
 
-	//UInt32 m_unMotionControlType;
+	UInt32 m_unMotionControlType;
 
 	virtual Real SaturateSpeed(Real f_original_speed, Real f_saturation_value);
 
@@ -84,14 +84,16 @@ public:
     //virtual void SetNoiseFactor(Real fNoise);
 
 private:
-    //virtual void ErolMotionControl(CVector2& cForce);
-    //virtual void CMC(CVector2& cForce);
+    virtual void ErolMotionControl(CVector2& cForce);
+    virtual void CMC(CVector2& cForce);
     virtual void VMC(CVector2& cForce);
+    virtual void BASIC(CVector2& cForce);
     virtual void UpdateWheelSpeeds();
 
-		//static const UInt8 MOTION_CONTROL_EROL;
-		//static const UInt8 MOTION_CONTROL_CMC;
-		//static const UInt8 MOTION_CONTROL_VMC;
+		static const UInt8 MOTION_CONTROL_EROL;
+		static const UInt8 MOTION_CONTROL_CMC;
+		static const UInt8 MOTION_CONTROL_VMC;
+		static const UInt8 MOTION_CONTROL_BASIC;
 
 
 };

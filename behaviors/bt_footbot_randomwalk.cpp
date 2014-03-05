@@ -66,6 +66,7 @@ void CBTFootbotRandomWalk::Step(CCI_FootBotState& cRobotState) {
 
 	//m_cRandomWalkDirection.SetFromAngleAndLength(cRandomDirection, fLength);
 	m_cRandomWalkDirection.FromPolarCoordinates(fLength, cRandomDirection);
+	//m_cRandomWalkDirection.FromPolarCoordinates(1.0f, CRadians(0));
 }
 
 void CBTFootbotRandomWalk::StepAndGo(CCI_FootBotState& cRobotState) {

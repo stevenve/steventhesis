@@ -1,5 +1,5 @@
-#ifndef BT_FOOTBOT_MOTION_CONTROL_H
-#define BT_FOOTBOT_MOTION_CONTROL_H
+#ifndef BT_FOOTBOT_ODOMETRY_H
+#define BT_FOOTBOT_ODOMETRY_H
 
 #include <argos3/core/utility/math/rng.h>
 #include "../BTSimple/ci_behavior.h"
@@ -16,7 +16,11 @@ class CBTFootbotOdometry: public CCI_Behavior<CCI_FootBotState> , public FSM<std
 
 private:
 
-	CRadians angle;
+	CRadians theta;
+	bool started;
+	Real delta_s;
+	Real x;
+	Real y;
 
 
 public:
@@ -32,6 +36,11 @@ public:
 
     virtual CRadians GetAngle();
     virtual void Start();
+    virtual void Stop();
+    virtual Real GetDistance();
+    //virtual CVector2 GetSavedLocation();
+    virtual CVector2 GetReversedLocationVector();
+    //virtual void ReverseStep(CCI_FootBotState& c_robot_state);
 
 };
 

@@ -1,12 +1,10 @@
 
 
-
+SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} --no-undefined" )
 #add_subdirectory(BTSimple)
 #add_subdirectory(behaviors)
 
 set(bt_footbot_simple_controller_IMPLEMENTATIONS
-  #controllers/randomforaging/bt_footbot_randomforaging_controller.cpp
-  #controllers/randomforaging/bt_footbot_randomforaging_root_behavior.cpp
   BTSimple/swarmanoid/footbot/ci_footbot_state.cpp
   BTSimple/swarmanoid/ci_swarmanoid_robot_state.cpp
   BTSimple/ci_robot_state.cpp
@@ -17,11 +15,8 @@ set(bt_footbot_simple_controller_IMPLEMENTATIONS
   behaviors/bt_footbot_obstacle_avoidance.cpp
   behaviors/bt_footbot_observe_ground.cpp
   behaviors/bt_footbot_control_leds.cpp
-  #common/footbot_constants.cpp
-  #loop_functions/simple/simple_loop_functions.cpp
-  #loop_functions/recruitment/recruitment_loop_functions.cpp
-  #controllers/recruitment/bt_footbot_recruitment_controller.cpp
-  #controllers/recruitment/bt_footbot_recruitment_root_behavior.cpp
+  behaviors/bt_footbot_odometry.cpp
+  behaviors/bt_footbot_RAB_signal.cpp
 )
 
 add_library(bt_footbot_base SHARED ${bt_footbot_simple_controller_IMPLEMENTATIONS})

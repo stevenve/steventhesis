@@ -9,7 +9,7 @@
 
 using namespace argos;
 
-class CRecruitmentLoopFunctions : public CLoopFunctions {
+class CRecruiterLoopFunctions : public CLoopFunctions {
 
 public:
 

@@ -33,52 +33,60 @@ namespace argos{
 const std::string CCI_SwarmanoidRobotState::RAB_SENSOR_XML_NAME     = "range_and_bearing";
 const std::string CCI_SwarmanoidRobotState::RAB_ACTUATOR_XML_NAME   = "range_and_bearing";
 const std::string CCI_SwarmanoidRobotState::LEDS_ACTUATOR_XML_NAME             = "leds";
+const std::string CCI_SwarmanoidRobotState::STEERING_SENSOR_XML_NAME             = "differential_steering";
 
 //Actuator numbers
-    const UInt8  CCI_SwarmanoidRobotState::NUM_LEDS = 13;
-   /****************************************/
-   /****************************************/
+const UInt8  CCI_SwarmanoidRobotState::NUM_LEDS = 13;
+/****************************************/
+/****************************************/
 
-   void CCI_SwarmanoidRobotState::Init(){
+void CCI_SwarmanoidRobotState::Init(){
 
-      CCI_RobotState::Init();
+	m_tRABPacketDataToSend = CByteArray(10);
 
-      CCI_Sensor::TMap mapSensors = m_pcController->GetAllSensors();
-      CCI_Sensor::TMap::const_iterator itSensors;
+	CCI_RobotState::Init();
 
-      SENSOR_INIT_HELPER(RAB_SENSOR_XML_NAME, CCI_RangeAndBearingSensor, m_pcRABSensor, m_bIsUsingRABSensor);
+	CCI_Sensor::TMap mapSensors = m_pcController->GetAllSensors();
+	CCI_Sensor::TMap::const_iterator itSensors;
 
-      ///////////////////////////////////////////////////////////////////
-      //   INITIALIZE ALL THE ACTUATORS DECLARED IN THE XML CONFIGURATION
-      ///////////////////////////////////////////////////////////////////
+	SENSOR_INIT_HELPER(RAB_SENSOR_XML_NAME, CCI_RangeAndBearingSensor, m_pcRABSensor, m_bIsUsingRABSensor);
+	SENSOR_INIT_HELPER(STEERING_SENSOR_XML_NAME, CCI_DifferentialSteeringSensor, m_pcSteeringSensor, m_bIsUsingSteeringSensor);
 
-      CCI_Actuator::TMap mapActuators = m_pcController->GetAllActuators();
-      CCI_Actuator::TMap::const_iterator itActuators;
+	///////////////////////////////////////////////////////////////////
+	//   INITIALIZE ALL THE ACTUATORS DECLARED IN THE XML CONFIGURATION
+	///////////////////////////////////////////////////////////////////
 
-      ACTUATOR_INIT_HELPER(RAB_ACTUATOR_XML_NAME, CCI_RangeAndBearingActuator, m_pcRABActuator, m_bIsUsingRABActuator);
-      ACTUATOR_INIT_HELPER(LEDS_ACTUATOR_XML_NAME,                CCI_LEDsActuator,            m_pcLedsActuator,               m_bIsUsingLeds);
-   }
+	CCI_Actuator::TMap mapActuators = m_pcController->GetAllActuators();
+	CCI_Actuator::TMap::const_iterator itActuators;
 
-   /****************************************/
-   /****************************************/
+	ACTUATOR_INIT_HELPER(RAB_ACTUATOR_XML_NAME, CCI_RangeAndBearingActuator, m_pcRABActuator, m_bIsUsingRABActuator);
+	ACTUATOR_INIT_HELPER(LEDS_ACTUATOR_XML_NAME,                CCI_LEDsActuator,            m_pcLedsActuator,               m_bIsUsingLeds);
+}
 
-   void CCI_SwarmanoidRobotState::ApplyState(){
+/****************************************/
+/****************************************/
 
-      CCI_RobotState::ApplyState();
+void CCI_SwarmanoidRobotState::ApplyState(){
 
-      if (m_bRefreshLeds && m_bIsUsingLeds) {
-                  m_bRefreshLeds = false;
-                  m_pcLedsActuator->SetAllColors( m_tActuatedLedColors );
-              }
-   }
+	CCI_RobotState::ApplyState();
 
-   /****************************************/
-   /****************************************/
+	if (m_bRefreshLeds && m_bIsUsingLeds) {
+		m_bRefreshLeds = false;
+		m_pcLedsActuator->SetAllColors( m_tActuatedLedColors );
+	}
 
-   void CCI_SwarmanoidRobotState::ReadState(){
-   }
+	if (m_bIsUsingRABActuator) {
+		m_pcRABActuator->SetData(m_tRABPacketDataToSend);
+	}
+}
 
-   /****************************************/
-   /****************************************/
+/****************************************/
+/****************************************/
+
+void CCI_SwarmanoidRobotState::ReadState(){
+}
+
+/****************************************/
+/****************************************/
 
 }

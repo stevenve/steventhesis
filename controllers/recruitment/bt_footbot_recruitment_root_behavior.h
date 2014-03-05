@@ -12,6 +12,7 @@
 #include "../../behaviors/bt_footbot_obstacle_avoidance.h"
 #include "../../behaviors/bt_footbot_observe_ground.h"
 #include "../../behaviors/bt_footbot_control_leds.h"
+#include "../../behaviors/bt_footbot_odometry.h"
 
 using namespace argos;
 using namespace btfsm;
@@ -31,6 +32,7 @@ class CBTFootbotRecruitmentRootBehavior: public CCI_Behavior<CCI_FootBotState> ,
 	CBTFootbotMotionControl* m_pcMotionControl;
 	CBTFootbotObserveGround* m_pcObserveGround;
 	CBTFootbotControlLeds* m_pcControlLeds;
+	CBTFootbotOdometry* m_pcOdometry;
 
 	CCI_FootBotState* c_robot_state;
 
@@ -49,6 +51,11 @@ class CBTFootbotRecruitmentRootBehavior: public CCI_Behavior<CCI_FootBotState> ,
 		virtual void ExitNest();
 		virtual bool InNest();
 		virtual void GoToVector(CVector2);
+	    virtual void StartOdometry();
+	    virtual void StopOdometry();
+	    virtual void GoToFood();
+	    virtual bool IsDoneLookingForFood();
+	    virtual void ResetOdometry();
 
 
 

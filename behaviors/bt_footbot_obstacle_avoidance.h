@@ -34,6 +34,7 @@ class CBTFootbotObstacleAvoidance: public CCI_Behavior<CCI_FootBotState> , publi
 		virtual void Destroy(CCI_FootBotState& cRobotState);
 
 		virtual void Reset(CCI_FootBotState& cRobotState);
+		virtual void SetMaxDistance(Real dist);
 
 		/* Maximum distance detected by the camera*/
 //		static const Real DISTANCE_MAX = 100; //[cm]

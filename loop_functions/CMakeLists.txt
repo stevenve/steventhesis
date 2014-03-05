@@ -1,2 +1,6 @@
 add_subdirectory(simple)
-add_subdirectory(recruitment)
+#add_subdirectory(recruitment)
+add_subdirectory(exp1)
+add_subdirectory(recruiter)
+#add_subdirectory(template)
+add_subdirectory(combined)

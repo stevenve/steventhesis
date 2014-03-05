@@ -1,4 +1,4 @@
-#include "recruitment_qt_user_functions.h"
+#include "recruiter_qt_user_functions.h"
 
 #include <argos3/core/simulator/entity/controllable_entity.h>
 

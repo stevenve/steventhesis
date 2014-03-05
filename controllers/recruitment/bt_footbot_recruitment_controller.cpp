@@ -123,11 +123,16 @@ void CBTFootbotRecruitmentController::ReturnToNest(CCI_FootBotState& c_robot_sta
 void CBTFootbotRecruitmentController::GoToFood(CCI_FootBotState& c_robot_state) {
 	   /* So, do we return to the nest now? */
 	   if(m_sFoodData.HasFoodItem) {
+		   ((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->ResetOdometry();
 	      //m_pcLEDs->SetAllColors(CColor::RED);
 	      m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
+	   }else if(((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->IsDoneLookingForFood()){
+		   m_sStateData.State = SStateData::STATE_EXPLORING;
 	   }else{
 		   //CVector2 tmp = m_sStateData.CurrentPosition - m_sFoodData.LastFoodPosition;
-		   ((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->GoToVector(m_sFoodData.LastFoodPosition);
+		   //((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->GoToVector(m_sFoodData.LastFoodPosition);
+		   ((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->GoToFood();
+
 	   }
 }
 
@@ -143,6 +148,7 @@ void CBTFootbotRecruitmentController::Explore(CCI_FootBotState& c_robot_state) {
    if(m_sFoodData.HasFoodItem) {
       /* Switch to 'return to nest' and make LEDs RED */
       bReturnToNest = true;
+      ((CBTFootbotRecruitmentRootBehavior*) m_pcRootBehavior)->StopOdometry();
    }
    /* So, do we return to the nest now? */
    if(bReturnToNest) {

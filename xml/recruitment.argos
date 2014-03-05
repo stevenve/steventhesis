@@ -29,6 +29,7 @@
         <colored_blob_omnidirectional_camera implementation="rot_z_only" medium="leds" show_rays="false" />
 	<range_and_bearing implementation="medium" medium="rab" show_rays="false"/>
 	<footbot_motor_ground implementation="rot_z_only" />
+	<differential_steering implementation="default"/>
       </sensors>
 	<params><state/></params>
     </footbot_recruitment_controller>
@@ -71,7 +72,7 @@
     <distribute>
       <position method="uniform" min="-2,-3.5,0" max="2,-2.5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
-      <entity quantity="1" max_trials="100">
+      <entity quantity="2" max_trials="100">
         <foot-bot id="fb">
           <controller config="ffc" />
         </foot-bot>

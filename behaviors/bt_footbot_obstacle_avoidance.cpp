@@ -11,8 +11,6 @@ CBTFootbotObstacleAvoidance::CBTFootbotObstacleAvoidance(CCI_RobotData<CCI_FootB
 	m_pcRobotData = c_robot_data;
 	//m_cCameraBlobs.clear();
 	//m_cObstacleRepulsionAngle = CRadians::ZERO;
-	//m_fNoiseFactor = 0.0000001;
-	//m_cRandomNoiseRange.Set(-m_fNoiseFactor * CRadians::PI.GetValue(), m_fNoiseFactor * CRadians::PI.GetValue());
 	m_cObstacleRepulsionVector.Set(0.0f, 0.0f);
 	m_cObstacleRepulsionVectorRAB.Set(0.0f, 0.0f);
 	m_cObstacleRepulsionVectorTotal.Set(0.0f, 0.0f);
@@ -32,7 +30,6 @@ CBTFootbotObstacleAvoidance::~CBTFootbotObstacleAvoidance() {
 
 void CBTFootbotObstacleAvoidance::Init(CCI_FootBotState& cRobotState) {
 	/* create random generator */
-	//m_pcRNG = CARGoSRandom::CreateRNG("argos");
 	// Reset the FSM
 	ResetFSM();
 }
@@ -41,7 +38,7 @@ void CBTFootbotObstacleAvoidance::Init(CCI_FootBotState& cRobotState) {
 /****************************************/
 
 void CBTFootbotObstacleAvoidance::Destroy(CCI_FootBotState& cRobotState) {
-	//delete m_pcRNG;
+
 }
 
 /****************************************/
@@ -59,7 +56,6 @@ void CBTFootbotObstacleAvoidance::Reset(CCI_FootBotState& cRobotState) {
 void CBTFootbotObstacleAvoidance::Step(CCI_FootBotState& cRobotState) {
 
 	/* debug */
-	//LOG << "Robot ID:(step) " << cRobotState.GetRobotId() << std::endl;
 
 	m_cObstacleRepulsionVector.Set(0.0f, 0.0f);
 	m_cObstacleRepulsionVectorRAB.Set(0.0f, 0.0f);
@@ -74,7 +70,6 @@ void CBTFootbotObstacleAvoidance::Step(CCI_FootBotState& cRobotState) {
 		if (tReadings[i].Value > 0.0f) {
 			Real fRescaledReadings = -(tReadings[i].Value - 1);
 			cProximityReading.FromPolarCoordinates(fRescaledReadings, tReadings[i].Angle);
-			//LOGERR << "Angle: " << tReadings[i].Angle << " , reading: " << fRescaledReadings << std::endl;
 
 			fProximityForce = CalculateTannerPotentialForce(fRescaledReadings, m_fCenterDistance);
 			cProximityForceVector.FromPolarCoordinates(fProximityForce, tReadings[i].Angle);
@@ -84,12 +79,6 @@ void CBTFootbotObstacleAvoidance::Step(CCI_FootBotState& cRobotState) {
 
 	/* RAB */
 	StepRAB(cRobotState);
-
-	//Real fNoise = m_pcRNG->Uniform(m_cRandomNoiseRange);
-	//m_cLightDirection.SetFromAngleAndLength(m_cLightDirection.Angle() + CRadians(fNoise),m_cLightDirection.Length());
-
-	//Real fNoiseGoal = m_pcRNG->Uniform(m_cRandomNoiseGoalRange);
-	//m_cInformationVector.SetFromAngleAndLength(( m_cInformationDirection - GetOrientation() + CRadians(fNoiseGoal) ), 1.0);
 
 	//StepCamera(cRobotState);
 	//Real fNoise = m_pcRNG->Uniform(m_cRandomNoiseRange);
@@ -102,7 +91,6 @@ void CBTFootbotObstacleAvoidance::Step(CCI_FootBotState& cRobotState) {
 void CBTFootbotObstacleAvoidance::StepRAB(CCI_FootBotState& c_robot_state){
 	//m_cProximalControlVector.Set(0.0, 0.0);
 	/* received packets*/
-	//LOG << "Ever here!!!!" << std::endl;
 	std::vector<CCI_RangeAndBearingSensor::SPacket> cMyPackets;
 	Real fProximityForce;
 	CVector2 cProximityForceVector;
@@ -112,18 +100,12 @@ void CBTFootbotObstacleAvoidance::StepRAB(CCI_FootBotState& c_robot_state){
 	if (cMyPackets.size() != 0) {
 		for (std::vector<CCI_RangeAndBearingSensor::SPacket>::iterator it = cMyPackets.begin(); it != cMyPackets.end(); it++) {
 			CVector2 cProximityReading;
-			//LOG << "Distance rab " << (*it).Range << std::endl;
 			if ((*it).Range < m_fDistanceMax) {
 				cProximityReading.FromPolarCoordinates((*it).Range / m_fDistanceMax, (*it).HorizontalBearing);
 				fProximityForce = CalculateTannerPotentialForce((*it).Range / m_fDistanceMax, m_fCenterDistance);
 				cProximityForceVector.FromPolarCoordinates(fProximityForce, (*it).HorizontalBearing);
 				m_cObstacleRepulsionVectorRAB += cProximityForceVector;
 
-//				/* debug */
-//				LOG << "Robot ID: " << c_robot_state.GetRobotId() << std::endl;
-//				LOG << "Range: " << (*it).Range << std::endl;
-//				LOG << "Bearing: " << (*it).BearingHorizontal << std::endl;
-//				LOG << "Angle: " << m_cObstacleRepulsionVectorRAB.Angle() << "Length: " << m_cObstacleRepulsionVectorRAB.Length() << std::endl;
 			}
 		}
 
@@ -199,10 +181,9 @@ CVector2& CBTFootbotObstacleAvoidance::GetRABRepulsionVector() {
 	return m_cObstacleRepulsionVectorRAB;
 }
 
-/****************************************/
-/****************************************/
+void CBTFootbotObstacleAvoidance::SetMaxDistance(Real dist) {
+	m_fDistanceMax = dist;
+}
 
-//void CBTFootBotObstacleRepulsion::SetNoiseFactor(Real fNoise){
-//	m_fNoiseFactor = fNoise;
-//	m_cRandomNoiseRange.Set(-m_fNoiseFactor * CRadians::PI.GetValue(), m_fNoiseFactor * CRadians::PI.GetValue());
-//}
+/****************************************/
+/****************************************/
