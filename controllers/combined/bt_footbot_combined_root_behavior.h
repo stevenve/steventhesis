@@ -67,6 +67,8 @@ public:
 	virtual ~CBTFootbotCombinedRootBehavior();
 
 	virtual void Init(CCI_FootBotState& c_robot_state);
+	virtual void SetRobotType(int type);
+	virtual int GetRobotType(void);
 	virtual void Step(CCI_FootBotState& c_robot_state);
 	virtual void StepSolitary(CCI_FootBotState& c_robot_state);
 	virtual void StepRecruitee(CCI_FootBotState& c_robot_state);

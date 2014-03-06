@@ -7,6 +7,9 @@
 
 #define CLOSE_TO_NEST_PARAMETER 1
 #define CLOSE_TO_ARENA_END_PARAMETER 0.5f
+#define SOLITARY 0
+#define RECRUITER 1
+#define RECRUITEE 2
 
 /****************************************/
 /****************************************/
@@ -53,6 +56,11 @@ void CCombinedLoopFunctions::Init(TConfigurationNode& t_node) {
 		GetNodeAttribute(tForaging, "radius", m_fFoodSquareRadius);
 		m_fFoodSquareRadius *= m_fFoodSquareRadius;
 
+		int nbSolitary, nbRecruiter, nbRecruitee;
+		GetNodeAttribute(tForaging, "nbSolitary", nbSolitary);
+		GetNodeAttribute(tForaging, "nbRecruiter", nbRecruiter);
+		GetNodeAttribute(tForaging, "nbRecruitee", nbRecruitee);
+
 		if(type == "uniform")
 			generateUniformFoodPatch();
 		else if (type == "patched")
@@ -63,6 +71,29 @@ void CCombinedLoopFunctions::Init(TConfigurationNode& t_node) {
 		}
 		FillFood();
 
+		CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+		for(CSpace::TMapPerType::iterator it = m_cFootbots.begin(); it != m_cFootbots.end(); ++it) {
+			/* Get handle to foot-bot entity and controller */
+			CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+			CBTFootbotCombinedController& cController = dynamic_cast<CBTFootbotCombinedController&>(cFootBot.GetControllableEntity().GetController());
+			CBTFootbotCombinedRootBehavior* pcRootBehavior = cController.GetRootBehavior();
+
+			if(nbSolitary != 0){
+				pcRootBehavior->SetRobotType(SOLITARY);
+				nbSolitary--;
+				LOG << "Solitary added" << "\n";
+			}else if(nbRecruiter != 0){
+				pcRootBehavior->SetRobotType(RECRUITER);
+				nbRecruiter--;
+				LOG << "Recruiter added" << "\n";
+			}else if(nbRecruitee != 0){
+				pcRootBehavior->SetRobotType(RECRUITEE);
+				nbRecruitee--;
+				LOG << "Recruitee added" << "\n";
+			}
+
+		}
+
 
 	}
 	catch(CARGoSException& ex) {
@@ -70,7 +101,7 @@ void CCombinedLoopFunctions::Init(TConfigurationNode& t_node) {
 	}
 
 	m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
-	m_cOutput << "# clock\tcollected_food\tavarage per 100 steps" << std::endl;
+	m_cOutput << "# clock,robot type,collected_food,average per 1000 steps" << std::endl;
 }
 
 void CCombinedLoopFunctions::generateFoodPatches(){
@@ -103,7 +134,7 @@ void CCombinedLoopFunctions::Reset() {
 	m_cOutput.close();
 	/* Open the file, erasing its contents */
 	m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
-	m_cOutput << "# clock\tcollected_food\tavarage per 100 steps" << std::endl;
+	m_cOutput << "# clock,robot type,collected_food,average per 1000 steps" << std::endl;
 }
 
 /****************************************/
@@ -190,8 +221,48 @@ void CCombinedLoopFunctions::PreStep() {
 		}
 	}
 	if(GetSpace().GetSimulationClock() % 1000 == 0){
-		m_cOutput << GetSpace().GetSimulationClock() << "\t"
-				<< m_nbCollectedFood << "\t" << m_nbCollectedFood / (GetSpace().GetSimulationClock()/1000)<< "\n";
+		int nbFoodSolitary = 0;
+		int nbFoodRecruiter = 0;
+		int nbFoodRecruitee = 0;
+		int type = 0;
+		CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+
+		for(CSpace::TMapPerType::iterator it = m_cFootbots.begin(); it != m_cFootbots.end(); ++it) {
+			CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+			CBTFootbotCombinedController& cController = dynamic_cast<CBTFootbotCombinedController&>(cFootBot.GetControllableEntity().GetController());
+			CBTFootbotCombinedRootBehavior* pcRootBehavior = cController.GetRootBehavior();
+			/* Get food data */
+			CBTFootbotCombinedRootBehavior::SFoodData* sFoodData = &(*pcRootBehavior).GetFoodData();
+			type = pcRootBehavior->GetRobotType();
+			switch(type){
+			case SOLITARY: {nbFoodSolitary += sFoodData->TotalFoodItems; break;}
+			case RECRUITER: {nbFoodRecruiter += sFoodData->TotalFoodItems; break;}
+			case RECRUITEE: {nbFoodRecruitee += sFoodData->TotalFoodItems; break;}
+			default: { THROW_ARGOSEXCEPTION("unrecognized type when forming statistics"); }
+			}
+		}
+
+		m_cOutput << GetSpace().GetSimulationClock() << ","
+				  << "SOLITARY" << ","
+				  << nbFoodSolitary << ","
+				  << nbFoodSolitary / (GetSpace().GetSimulationClock()/1000.0f)
+				  << std::endl;
+
+		m_cOutput << GetSpace().GetSimulationClock() << ","
+						  << "RECRUITER" << ","
+						  << nbFoodRecruiter << ","
+						  << nbFoodRecruiter / (GetSpace().GetSimulationClock()/1000.0f)
+						  << std::endl;
+
+		m_cOutput << GetSpace().GetSimulationClock() << ","
+						  << "RECRUITEE" << ","
+						  << nbFoodRecruitee << ","
+						  << nbFoodRecruitee / (GetSpace().GetSimulationClock()/1000.0f)
+						  << std::endl;
+	}
+
+	if(GetSpace().GetSimulationClock() % 10000 == 0){
+			LOG << "Clock at: " << GetSpace().GetSimulationClock() << std::endl;
 	}
 }
 
@@ -229,18 +300,18 @@ void CCombinedLoopFunctions::AddOneFood(){
 	}*/
 
 	bool added = false;
-		for(UInt32 j = 0; j < foodPatches.size(); j++){
-			while(foodPatches[j].size() < NbFoodItems && !added){
-				CRange<Real> xRange((foodPatchCenters[j].GetX() - (foodPatchSizes[j].GetX()/2)), (foodPatchCenters[j].GetX() + (foodPatchSizes[j].GetX()/2)));
-				CRange<Real> yRange((foodPatchCenters[j].GetY() - (foodPatchSizes[j].GetY()/2)), (foodPatchCenters[j].GetY() + (foodPatchSizes[j].GetY()/2)));
-				CVector2 pos(m_pcRNG->Uniform(xRange), m_pcRNG->Uniform(yRange));
-				if(!CloseToNest(pos) && !CloseToArenaEnd(pos)){
-					foodPatches[j].push_back(pos);
-					added = true;
-				}
+	for(UInt32 j = 0; j < foodPatches.size(); j++){
+		while(foodPatches[j].size() < NbFoodItems && !added){
+			CRange<Real> xRange((foodPatchCenters[j].GetX() - (foodPatchSizes[j].GetX()/2)), (foodPatchCenters[j].GetX() + (foodPatchSizes[j].GetX()/2)));
+			CRange<Real> yRange((foodPatchCenters[j].GetY() - (foodPatchSizes[j].GetY()/2)), (foodPatchCenters[j].GetY() + (foodPatchSizes[j].GetY()/2)));
+			CVector2 pos(m_pcRNG->Uniform(xRange), m_pcRNG->Uniform(yRange));
+			if(!CloseToNest(pos) && !CloseToArenaEnd(pos)){
+				foodPatches[j].push_back(pos);
+				added = true;
 			}
-			added = false;
 		}
+		added = false;
+	}
 }
 
 CVector2 CCombinedLoopFunctions::GenerateFoodPatchPosition(){

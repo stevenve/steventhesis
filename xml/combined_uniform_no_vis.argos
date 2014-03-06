@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="0"
+    <experiment length="10000"
                 ticks_per_second="10"
                 random_seed="1000" />
 
@@ -86,7 +86,7 @@
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <!--<position method="uniform" min="0,-1,0" max="0,-1,0" />-->
       <!--<orientation method="uniform" min="-90,0,0" max="-90,0,0" />-->
-      <entity quantity="10" max_trials="100">
+      <entity quantity="20" max_trials="100">
         <foot-bot id="a">
           <controller config="ffc" />
         </foot-bot>
@@ -107,11 +107,11 @@
 	nbFoodItems="100"
 	renewalRate="1"
 	foodPatchSize="3"
-	type = "patched"
-	nbSolitary = "2"
-	nbRecruiter = "2"
-	nbRecruitee = "6"
-	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/collectedItems.txt" />
+	type = "uniform"
+	nbSolitary = "4"
+	nbRecruiter = "4"
+	nbRecruitee = "12"
+	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/combined_uniform_1000.csv" />
   </loop_functions>
 
   <!-- ******************* -->
@@ -132,7 +132,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <visualization>
+  <!-- visualization>
     <qt-opengl>
       <camera>
         <placement idx="0" position="0.300443,-0.0813248,2.3663" look_at="0.300855,-0.0613303,1.3665" lens_focal_length="7" />
@@ -140,6 +140,6 @@
       <user_functions library="build/problem/loop_functions/combined/libcombined_loop_functions.so"
                       label="combined_qt_user_functions" />
     </qt-opengl>
-  </visualization>
+  </visualization-->
 
 </argos-configuration>

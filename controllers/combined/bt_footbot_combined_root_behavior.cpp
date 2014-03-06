@@ -107,6 +107,14 @@ void CBTFootbotCombinedRootBehavior::Reset(CCI_FootBotState& c_robot_state) {
 
 /****************************************/
 
+void CBTFootbotCombinedRootBehavior::SetRobotType(int type) {
+	robotType = type;
+}
+
+int CBTFootbotCombinedRootBehavior::GetRobotType() {
+	return robotType;
+}
+
 void CBTFootbotCombinedRootBehavior::Step(CCI_FootBotState& c_robot_state) {
 	// TODO
 	switch(robotType){
@@ -256,7 +264,7 @@ void CBTFootbotCombinedRootBehavior::FollowSignal(){
 	CVector2 tmp = m_pcSignalling->GetVectorToClosestSignal(*c_robot_state);
 
 	if(tmp.Length() <= SIGNAL_CLOSE_RANGE)
-			closeToSignal = true;
+		closeToSignal = true;
 
 	if(tmp.Length() != 0)
 		tmp = tmp.Normalize();
@@ -278,18 +286,22 @@ void CBTFootbotCombinedRootBehavior::ExploreSignalArea(){
 		ExitNest();
 	}
 	else {
-
 		// Step for obstacle avoidance and random walk
 		m_pcObstacleAvoidance->Step(*c_robot_state);
 		m_pcWalk->Step(*c_robot_state);
 
-
 		// Calculate vector
-		CVector2 targetVector = m_pcObstacleAvoidance->GetVector();
-		targetVector += m_pcWalk->GetVector();
+		CVector2 tmp = m_pcObstacleAvoidance->GetVector();
+		if(tmp.Length() != 0)
+			tmp = AVOIDANCE_FACTOR *tmp.Normalize();
+		CVector2 tmp2 = m_pcWalk->GetVector();
+		if(tmp2.Length() != 0)
+			tmp += tmp2.Normalize();
+		if(tmp.Length() != 0)
+			tmp.Normalize();
 
 		// Apply vector
-		GoToVector(targetVector);
+		GoToVector(tmp);
 	}
 }
 
@@ -319,7 +331,6 @@ void CBTFootbotCombinedRootBehavior::Explore() {
 		ExitNest();
 	}
 	else {
-		//m_pcOdometry->Reset(*c_robot_state);
 
 		// Get vectors for obstacle avoidance and random walk
 		m_pcObstacleAvoidance->Step(*c_robot_state);
@@ -327,11 +338,17 @@ void CBTFootbotCombinedRootBehavior::Explore() {
 
 
 		// Calculate vector
-		CVector2 targetVector = m_pcObstacleAvoidance->GetVector();
-		targetVector += m_pcWalk->GetVector();
+		CVector2 tmp = m_pcObstacleAvoidance->GetVector();
+		if(tmp.Length() != 0)
+			tmp = AVOIDANCE_FACTOR *tmp.Normalize();
+		CVector2 tmp2 = m_pcWalk->GetVector();
+		if(tmp2.Length() != 0)
+			tmp += tmp2.Normalize();
+		if(tmp.Length() != 0)
+			tmp.Normalize();
 
 		// Apply vector
-		GoToVector(targetVector);
+		GoToVector(tmp);
 	}
 }
 
@@ -342,7 +359,13 @@ void CBTFootbotCombinedRootBehavior::ExitNest() {
 	m_pcPhototaxis->Step(*c_robot_state);
 
 	CVector2 tmp = m_pcObstacleAvoidance->GetVector();
-	tmp += m_pcPhototaxis->GetVector();
+	if(tmp.Length() != 0)
+		tmp = AVOIDANCE_FACTOR *tmp.Normalize();
+	CVector2 tmp2 = m_pcPhototaxis->GetVector();
+	if(tmp2.Length() != 0)
+		tmp += tmp2.Normalize();
+	if(tmp.Length() != 0)
+		tmp.Normalize();
 
 	GoToVector(tmp);
 }
@@ -425,10 +448,10 @@ void CBTFootbotCombinedRootBehavior::ResetOdometry(){
 /****************************************/
 
 CBTFootbotCombinedRootBehavior::SFoodData::SFoodData() :
-										HasFoodItem(false),
-										FoodItemIdx(0),
-										TotalFoodItems(0),
-										LastFoodPosition(0,0){
+												HasFoodItem(false),
+												FoodItemIdx(0),
+												TotalFoodItems(0),
+												LastFoodPosition(0,0){
 }
 
 void CBTFootbotCombinedRootBehavior::SFoodData::Init(){

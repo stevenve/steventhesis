@@ -17,6 +17,7 @@ set(bt_footbot_simple_controller_IMPLEMENTATIONS
   behaviors/bt_footbot_control_leds.cpp
   behaviors/bt_footbot_odometry.cpp
   behaviors/bt_footbot_RAB_signal.cpp
+#  behaviors/bt_footbot_beacon.cpp
 )
 
 add_library(bt_footbot_base SHARED ${bt_footbot_simple_controller_IMPLEMENTATIONS})

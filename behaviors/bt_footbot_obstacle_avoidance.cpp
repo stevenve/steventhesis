@@ -9,13 +9,11 @@ CBTFootbotObstacleAvoidance::CBTFootbotObstacleAvoidance(CCI_RobotData<CCI_FootB
 			CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_obstacle_avoidance"){
 	// Get data:
 	m_pcRobotData = c_robot_data;
-	//m_cCameraBlobs.clear();
-	//m_cObstacleRepulsionAngle = CRadians::ZERO;
 	m_cObstacleRepulsionVector.Set(0.0f, 0.0f);
 	m_cObstacleRepulsionVectorRAB.Set(0.0f, 0.0f);
 	m_cObstacleRepulsionVectorTotal.Set(0.0f, 0.0f);
 	//RESCALED_CENTER_DISTANCE = CENTER_DISTANCE / DISTANCE_MAX;
-	m_fDistanceMax = 50.0f; // for RAB in cm's
+	m_fDistanceMax = 100.0f; // for RAB in cm's
 	m_fCenterDistance = 1.0f; // set to maximum to have repulsion all the time
 }
 
@@ -156,14 +154,6 @@ Real CBTFootbotObstacleAvoidance::CalculateLennardJonesPotentialForce(Real f_dis
 		return (4 * 0.3 * ((-12 * pow(f_desired_distance, 12.0) / pow(f_distance, 13.0)) + 6 * pow(f_desired_distance, 6.0) / pow(f_distance, 7.0)) );
 	}
 }
-
-/****************************************/
-/****************************************/
-
-//CRadians& CBTFootbotObstacleAvoidance::GetObstacleRepulsionAngle() {
-//	//m_cObstacleRepulsionAngle = m_cObstacleRepulsionVector.Angle();
-//	//return m_cObstacleRepulsionAngle;
-//}
 
 /****************************************/
 /****************************************/

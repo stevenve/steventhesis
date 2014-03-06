@@ -19,7 +19,7 @@ CBTFootbotMotionControl::CBTFootbotMotionControl(CCI_RobotData<CCI_FootBotState>
 															CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_motion_control"),
 															m_cRandomNoiseRange(-0.0000001, 0.0000001) {
 
-	m_unMotionControlType = MOTION_CONTROL_EROL;
+	m_unMotionControlType = MOTION_CONTROL_VMC;//MOTION_CONTROL_EROL;
 
 	m_fLeftSpeed = 0.0;
 	m_fRightSpeed = 0.0;
@@ -32,7 +32,7 @@ CBTFootbotMotionControl::CBTFootbotMotionControl(CCI_RobotData<CCI_FootBotState>
 
 	// OTHERS
 
-	m_fBiasForwardSpeed = 0.0; //5.0
+	m_fBiasForwardSpeed = 1.5; //5.0
 
 	m_fForwardSpeed = 0.001;
 	m_fAngularSpeed = 0.0;

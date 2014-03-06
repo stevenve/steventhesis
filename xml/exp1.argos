@@ -31,7 +31,16 @@
 	<footbot_motor_ground implementation="rot_z_only" />
 	<differential_steering implementation="default"/>
       </sensors>
-	<params><state/></params>
+	<params>
+		<parameters 
+			exploreTime="300"
+			dropTime="1"
+			pickupTime="1"
+			signalDistance="500000"
+			obstacleAvoidanceDistance="50"
+			avoidanceFactor="3"
+	 		/>
+	</params>
     </footbot_exp1_controller>
 
   </controllers>

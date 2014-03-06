@@ -3,11 +3,9 @@
 #include <argos3/core/utility/math/angles.h>
 #include "bt_footbot_exp1_controller.h"
 
-#define avoidanceFactor 3 // determines importance of avoidance relative to the combined sum of other vector headings (eg. 2 means twice as important)
-
 /****************************************/
 
-CBTFootbotExp1RootBehavior::CBTFootbotExp1RootBehavior(CCI_RobotData<CCI_FootBotState>* c_robot_data) :
+CBTFootbotExp1RootBehavior::CBTFootbotExp1RootBehavior(CCI_RobotData<CCI_FootBotState>* c_robot_data, TConfigurationNode& t_node) :
 CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_template_root_behavior") {
 	CCI_RobotData<CCI_FootBotState>* c_robot_state = c_robot_data;
 
@@ -21,6 +19,8 @@ CCI_Behavior<CCI_FootBotState> (c_robot_data, "bt_footbot_template_root_behavior
 	m_pcOdometry = new CBTFootbotOdometry(c_robot_data);
 	pickedUp = false;
 	timer = 0;
+
+	node = t_node;
 }
 
 /****************************************/
@@ -48,6 +48,15 @@ void CBTFootbotExp1RootBehavior::Init(CCI_FootBotState& state) {
 
 	timer = 0;
 	pickedUp = false;
+
+	TConfigurationNode& tForaging = GetNode(node, "parameters");
+	GetNodeAttribute(tForaging, "exploreTime", SIGNAL_EXPLORE_TIME);
+	GetNodeAttribute(tForaging, "dropTime", DROP_TIME);
+	GetNodeAttribute(tForaging, "pickupTime", PICKUP_TIME);
+	GetNodeAttribute(tForaging, "avoidanceFactor", AVOIDANCE_FACTOR);
+	Real dist;
+	GetNodeAttribute(tForaging, "obstacleAvoidanceDistance", dist);
+	m_pcObstacleAvoidance->SetMaxDistance(dist);
 }
 
 
@@ -147,11 +156,17 @@ void CBTFootbotExp1RootBehavior::Explore() {
 
 
 		// Calculate vector
-		CVector2 targetVector = m_pcObstacleAvoidance->GetVector();
-		targetVector += m_pcWalk->GetVector();
+		CVector2 tmp = m_pcObstacleAvoidance->GetVector();
+		if(tmp.Length() != 0)
+			tmp = AVOIDANCE_FACTOR *tmp.Normalize();
+		CVector2 tmp2 = m_pcWalk->GetVector();
+		if(tmp2.Length() != 0)
+			tmp += tmp2.Normalize();
+		if(tmp.Length() != 0)
+			tmp.Normalize();
 
 		// Apply vector
-		GoToVector(targetVector);
+		GoToVector(tmp);
 	}
 }
 
@@ -162,7 +177,13 @@ void CBTFootbotExp1RootBehavior::ExitNest() {
 	m_pcPhototaxis->Step(*c_robot_state);
 
 	CVector2 tmp = m_pcObstacleAvoidance->GetVector();
-	tmp += m_pcPhototaxis->GetVector();
+	if(tmp.Length() != 0)
+		tmp = AVOIDANCE_FACTOR *tmp.Normalize();
+	CVector2 tmp2 = m_pcPhototaxis->GetVector();
+	if(tmp2.Length() != 0)
+		tmp += tmp2.Normalize();
+	if(tmp.Length() != 0)
+		tmp.Normalize();
 
 	GoToVector(tmp);
 }
@@ -173,7 +194,7 @@ void CBTFootbotExp1RootBehavior::GoToFood(){
 
 	CVector2 tmp = m_pcObstacleAvoidance->GetVector();
 	if(tmp.Length() != 0)
-		tmp = avoidanceFactor *tmp.Normalize();
+		tmp = AVOIDANCE_FACTOR *tmp.Normalize();
 	CVector2 tmp2 = m_pcOdometry->GetReversedLocationVector();
 	if(tmp2.Length() != 0)
 		tmp += tmp2.Normalize();
@@ -192,12 +213,12 @@ void CBTFootbotExp1RootBehavior::ReturnToNest() {
 
 	CVector2 tmp = m_pcObstacleAvoidance->GetVector();
 	if(tmp.Length() != 0)
-		tmp = avoidanceFactor *tmp.Normalize();
+		tmp = AVOIDANCE_FACTOR *tmp.Normalize();
 	CVector2 tmp2 = m_pcPhototaxis->GetVector();
 	if(tmp2.Length() != 0)
 		tmp += tmp2.Normalize();
 	if(tmp.Length() != 0)
-			tmp.Normalize();
+		tmp.Normalize();
 
 	GoToVector(tmp);
 	m_pcOdometry->Step(*c_robot_state);
@@ -245,10 +266,10 @@ void CBTFootbotExp1RootBehavior::ResetOdometry(){
 /****************************************/
 
 CBTFootbotExp1RootBehavior::SFoodData::SFoodData() :
-																										   HasFoodItem(false),
-																										   FoodItemIdx(0),
-																										   TotalFoodItems(0),
-																										   LastFoodPosition(0,0){
+																																   HasFoodItem(false),
+																																   FoodItemIdx(0),
+																																   TotalFoodItems(0),
+																																   LastFoodPosition(0,0){
 }
 
 void CBTFootbotExp1RootBehavior::SFoodData::Init(){

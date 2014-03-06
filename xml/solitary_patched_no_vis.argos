@@ -6,10 +6,9 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="0"
+    <experiment length="10000"
                 ticks_per_second="10"
-                random_seed="1000" />
-
+                random_seed="10000" />
   </framework>
 
   <!-- *************** -->
@@ -17,7 +16,7 @@
   <!-- *************** -->
   <controllers>
 
-    <footbot_combined_controller id="ffc"
+    <footbot_exp1_controller id="ffc"
                                  library="build/problem/libbt_footbot_base.so">
       <actuators>
         <differential_steering implementation="default" />
@@ -33,21 +32,18 @@
 	<differential_steering implementation="default"/>
       </sensors>
 	<params>
-		<!-- signalCloseRange should be at least as big as obstacleAvoidanceDistance -->
 		<parameters 
 			exploreTime="300"
-			signalTime="2000"
 			dropTime="1"
 			pickupTime="1"
-			signalCloseRange="50" 
 			signalDistance="500000"
 			obstacleAvoidanceDistance="50"
 			avoidanceFactor="3"
 	 		/>
 	</params>
-    </footbot_combined_controller>
+    </footbot_exp1_controller>
 
-</controllers>
+  </controllers>
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->
@@ -86,8 +82,8 @@
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <!--<position method="uniform" min="0,-1,0" max="0,-1,0" />-->
       <!--<orientation method="uniform" min="-90,0,0" max="-90,0,0" />-->
-      <entity quantity="10" max_trials="100">
-        <foot-bot id="a">
+      <entity quantity="20" max_trials="100">
+        <foot-bot id="fb">
           <controller config="ffc" />
         </foot-bot>
       </entity>
@@ -98,20 +94,17 @@
 <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="build/problem/loop_functions/combined/libcombined_loop_functions.so"
-                  label="combined_loop_functions">
+  <loop_functions library="build/problem/loop_functions/exp1/libexp1_loop_functions.so"
+                  label="exp1_loop_functions">
     <foraging 
 	radius="0.1"
 	nestSize="2"
-	nbFoodPatches="2"
+	nbFoodPatches="1"
 	nbFoodItems="100"
 	renewalRate="1"
-	foodPatchSize="3"
+	foodPatchSize="6"
 	type = "patched"
-	nbSolitary = "2"
-	nbRecruiter = "2"
-	nbRecruitee = "6"
-	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/collectedItems.txt" />
+	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/solitary_patched_10000.csv" />
   </loop_functions>
 
   <!-- ******************* -->
@@ -132,14 +125,14 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <visualization>
+  <!--visualization>
     <qt-opengl>
       <camera>
         <placement idx="0" position="0.300443,-0.0813248,2.3663" look_at="0.300855,-0.0613303,1.3665" lens_focal_length="7" />
       </camera>
-      <user_functions library="build/problem/loop_functions/combined/libcombined_loop_functions.so"
-                      label="combined_qt_user_functions" />
+      <user_functions library="build/problem/loop_functions/exp1/libexp1_loop_functions.so"
+                      label="exp1_qt_user_functions" />
     </qt-opengl>
-  </visualization>
+  </visualization-->
 
 </argos-configuration>
