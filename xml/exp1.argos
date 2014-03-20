@@ -8,7 +8,7 @@
     <system threads="0" />
     <experiment length="0"
                 ticks_per_second="10"
-                random_seed="1000" />
+                random_seed="10" />
   </framework>
 
   <!-- *************** -->
@@ -33,6 +33,7 @@
       </sensors>
 	<params>
 		<parameters 
+			useOdometry="false"
 			exploreTime="300"
 			dropTime="1"
 			pickupTime="1"
@@ -82,7 +83,7 @@
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <!--<position method="uniform" min="0,-1,0" max="0,-1,0" />-->
       <!--<orientation method="uniform" min="-90,0,0" max="-90,0,0" />-->
-      <entity quantity="20" max_trials="100">
+      <entity quantity="10" max_trials="100">
         <foot-bot id="fb">
           <controller config="ffc" />
         </foot-bot>
@@ -99,10 +100,10 @@
     <foraging 
 	radius="0.1"
 	nestSize="2"
-	nbFoodPatches="1"
-	nbFoodItems="100"
+	nbFoodPatches="2"
+	nbFoodItems="50"
 	renewalRate="1"
-	foodPatchSize="6"
+	foodPatchSize="3"
 	type = "patched"
 	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/collectedItems.txt" />
   </loop_functions>

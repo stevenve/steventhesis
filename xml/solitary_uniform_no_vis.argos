@@ -6,9 +6,9 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="10000"
+    <experiment length="5000"
                 ticks_per_second="10"
-                random_seed="10000" />
+                random_seed="10" />
   </framework>
 
   <!-- *************** -->
@@ -32,10 +32,14 @@
 	<differential_steering implementation="default"/>
       </sensors>
 	<params>
+		<!-- signalCloseRange should be at least as big as obstacleAvoidanceDistance -->
 		<parameters 
+			useOdometry="true"
 			exploreTime="300"
+			signalTime="2000"
 			dropTime="1"
 			pickupTime="1"
+			signalCloseRange="50" 
 			signalDistance="500000"
 			obstacleAvoidanceDistance="50"
 			avoidanceFactor="3"
@@ -102,9 +106,9 @@
 	nbFoodPatches="1"
 	nbFoodItems="100"
 	renewalRate="1"
-	foodPatchSize="6"
+	foodPatchSize="1"
 	type = "uniform"
-	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/solitary_uniform_10000.csv" />
+	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/solitary_uniform_10.csv" />
   </loop_functions>
 
   <!-- ******************* -->

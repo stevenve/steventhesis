@@ -1,0 +1,3 @@
+no odometry
+small food patches
+low density

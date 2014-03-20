@@ -8,7 +8,7 @@
     <system threads="0" />
     <experiment length="0"
                 ticks_per_second="10"
-                random_seed="1000" />
+                random_seed="100000000" />
 
   </framework>
 
@@ -35,6 +35,7 @@
 	<params>
 		<!-- signalCloseRange should be at least as big as obstacleAvoidanceDistance -->
 		<parameters 
+			useOdometry="true"
 			exploreTime="300"
 			signalTime="2000"
 			dropTime="1"
@@ -106,7 +107,7 @@
 	nbFoodPatches="2"
 	nbFoodItems="100"
 	renewalRate="1"
-	foodPatchSize="3"
+	foodPatchSize="2.5"
 	type = "patched"
 	nbSolitary = "2"
 	nbRecruiter = "2"

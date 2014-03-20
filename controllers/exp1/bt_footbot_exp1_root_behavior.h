@@ -21,7 +21,7 @@ class CBTFootbotExp1RootBehavior: public CCI_Behavior<CCI_FootBotState> , public
 
 private:
 
-
+	bool USE_ODOMETRY;
 	int AVOIDANCE_FACTOR;
 	int SIGNAL_EXPLORE_TIME;
 	int SIGNAL_TIME;

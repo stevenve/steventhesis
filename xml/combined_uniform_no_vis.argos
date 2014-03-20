@@ -8,8 +8,7 @@
     <system threads="0" />
     <experiment length="10000"
                 ticks_per_second="10"
-                random_seed="1000" />
-
+                random_seed="10" />
   </framework>
 
   <!-- *************** -->
@@ -35,6 +34,7 @@
 	<params>
 		<!-- signalCloseRange should be at least as big as obstacleAvoidanceDistance -->
 		<parameters 
+			useOdometry="true"
 			exploreTime="300"
 			signalTime="2000"
 			dropTime="1"
@@ -103,15 +103,15 @@
     <foraging 
 	radius="0.1"
 	nestSize="2"
-	nbFoodPatches="2"
+	nbFoodPatches="1"
 	nbFoodItems="100"
 	renewalRate="1"
-	foodPatchSize="3"
+	foodPatchSize="1"
 	type = "uniform"
 	nbSolitary = "4"
 	nbRecruiter = "4"
 	nbRecruitee = "12"
-	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/combined_uniform_1000.csv" />
+	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/combined_uniform_10.csv" />
   </loop_functions>
 
   <!-- ******************* -->

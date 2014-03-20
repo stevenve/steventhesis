@@ -178,7 +178,6 @@ void CBTFootbotMotionControl::CMC(CVector2& c_force) {
 	if (m_fForwardSpeed < 0.0 && m_bForwardOnly) {
 		m_fForwardSpeed = 0.0;
 	}
-
 }
 
 void CBTFootbotMotionControl::VMC(CVector2& c_force) {
@@ -187,10 +186,15 @@ void CBTFootbotMotionControl::VMC(CVector2& c_force) {
 
 	if(m_fForwardSpeed < 0.0 && m_bForwardOnly){
 		m_fForwardSpeed = 0.0;
+		if(m_fAngularSpeed <= 0) // added because travelling in negative direction should always result in maximum angular velocity
+			m_fAngularSpeed = -m_fAngularKVMC;
+		else
+			m_fAngularSpeed = m_fAngularKVMC;
 	}
 
 	m_fForwardSpeed+=m_fBiasForwardSpeed;
 
+	//LOG << c_force.GetX() << ", " << c_force.GetY() << "\n";
 	//LOG << "Fw: " << m_fForwardSpeed << "\n";
 	//LOG << "Ang: " << m_fAngularSpeed << "\n";
 }

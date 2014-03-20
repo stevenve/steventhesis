@@ -3,6 +3,7 @@
 #include <argos3/core/utility/math/angles.h>
 #include "bt_footbot_exp1_controller.h"
 
+
 /****************************************/
 
 CBTFootbotExp1RootBehavior::CBTFootbotExp1RootBehavior(CCI_RobotData<CCI_FootBotState>* c_robot_data, TConfigurationNode& t_node) :
@@ -50,6 +51,7 @@ void CBTFootbotExp1RootBehavior::Init(CCI_FootBotState& state) {
 	pickedUp = false;
 
 	TConfigurationNode& tForaging = GetNode(node, "parameters");
+	GetNodeAttribute(tForaging, "useOdometry", USE_ODOMETRY);
 	GetNodeAttribute(tForaging, "exploreTime", SIGNAL_EXPLORE_TIME);
 	GetNodeAttribute(tForaging, "dropTime", DROP_TIME);
 	GetNodeAttribute(tForaging, "pickupTime", PICKUP_TIME);
@@ -171,7 +173,6 @@ void CBTFootbotExp1RootBehavior::Explore() {
 }
 
 void CBTFootbotExp1RootBehavior::ExitNest() {
-
 	m_pcObstacleAvoidance->Step(*c_robot_state);
 	m_pcPhototaxis->SetAntiPhototaxis(true);
 	m_pcPhototaxis->Step(*c_robot_state);
@@ -266,10 +267,10 @@ void CBTFootbotExp1RootBehavior::ResetOdometry(){
 /****************************************/
 
 CBTFootbotExp1RootBehavior::SFoodData::SFoodData() :
-																																   HasFoodItem(false),
-																																   FoodItemIdx(0),
-																																   TotalFoodItems(0),
-																																   LastFoodPosition(0,0){
+																																				   HasFoodItem(false),
+																																				   FoodItemIdx(0),
+																																				   TotalFoodItems(0),
+																																				   LastFoodPosition(0,0){
 }
 
 void CBTFootbotExp1RootBehavior::SFoodData::Init(){
@@ -310,11 +311,16 @@ void CBTFootbotExp1RootBehavior::UpdateStateData(){
 		m_sStateData.InNest = false;
 
 	if(m_sStateData.State == SStateData::STATE_DROP && pickedUp == false){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
-		m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
+		if(USE_ODOMETRY){
+			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
+			m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
+		}else{
+			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+			m_sStateData.State = SStateData::STATE_EXPLORING;
+		}
 	}else if(m_sStateData.State == SStateData::STATE_RETURN_TO_NEST && m_sStateData.InNest) {
 		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
-		timer = PICKUP_TIME;
+		timer = DROP_TIME;
 		m_sStateData.State = SStateData::STATE_DROP;
 	}else if((m_sStateData.State == SStateData::STATE_EXPLORING || m_sStateData.State == SStateData::STATE_GO_TO_FOOD) && m_sFoodData.HasFoodItem) {
 		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);

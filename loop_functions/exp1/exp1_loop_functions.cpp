@@ -6,7 +6,7 @@
 #include "../../controllers/exp1/bt_footbot_exp1_controller.h"
 
 #define CLOSE_TO_NEST_PARAMETER 1
-#define CLOSE_TO_ARENA_END_PARAMETER 0.5f
+#define CLOSE_TO_ARENA_END_PARAMETER 0.0f
 
 /****************************************/
 /****************************************/
@@ -70,7 +70,7 @@ void CExp1LoopFunctions::Init(TConfigurationNode& t_node) {
 	}
 
 	m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
-	m_cOutput << "# clock,collected_food,avarage per 100 steps" << std::endl;
+	m_cOutput << "# clock,collected_food" << std::endl;
 }
 
 void CExp1LoopFunctions::generateFoodPatches(){
@@ -103,7 +103,7 @@ void CExp1LoopFunctions::Reset() {
 	m_cOutput.close();
 	/* Open the file, erasing its contents */
 	m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
-	m_cOutput << "# clock\tcollected_food\tavarage per 100 steps" << std::endl;
+	m_cOutput << "# clock\tcollected_food" << std::endl;
 }
 
 /****************************************/
@@ -192,7 +192,6 @@ void CExp1LoopFunctions::PreStep() {
 	if(GetSpace().GetSimulationClock() % 1000 == 0){
 		m_cOutput << GetSpace().GetSimulationClock() << ","
 				<< m_nbCollectedFood << ","
-				<< m_nbCollectedFood / (GetSpace().GetSimulationClock()/1000.0f)
 				<< std::endl;
 	}
 	if(GetSpace().GetSimulationClock() % 10000 == 0){

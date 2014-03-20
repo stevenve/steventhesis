@@ -6,10 +6,9 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="10000"
+    <experiment length="5000"
                 ticks_per_second="10"
-                random_seed="1000" />
-
+                random_seed="10" />
   </framework>
 
   <!-- *************** -->
@@ -17,7 +16,7 @@
   <!-- *************** -->
   <controllers>
 
-    <footbot_combined_controller id="ffc"
+    <footbot_combined_novis_controller id="ffc"
                                  library="build/problem/libbt_footbot_base.so">
       <actuators>
         <differential_steering implementation="default" />
@@ -27,7 +26,6 @@
       <sensors>
 	<footbot_proximity implementation="default" />
         <footbot_light                       implementation="rot_z_only" show_rays="false"  />
-        <colored_blob_omnidirectional_camera implementation="rot_z_only" medium="leds" show_rays="false" />
 	<range_and_bearing implementation="medium" medium="rab" show_rays="false"/>
 	<footbot_motor_ground implementation="rot_z_only" />
 	<differential_steering implementation="default"/>
@@ -35,6 +33,7 @@
 	<params>
 		<!-- signalCloseRange should be at least as big as obstacleAvoidanceDistance -->
 		<parameters 
+			useOdometry="true"
 			exploreTime="300"
 			signalTime="2000"
 			dropTime="1"
@@ -45,7 +44,7 @@
 			avoidanceFactor="3"
 	 		/>
 	</params>
-    </footbot_combined_controller>
+    </footbot_combined_novis_controller>
 
 </controllers>
 
@@ -86,7 +85,7 @@
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <!--<position method="uniform" min="0,-1,0" max="0,-1,0" />-->
       <!--<orientation method="uniform" min="-90,0,0" max="-90,0,0" />-->
-      <entity quantity="20" max_trials="100">
+      <entity quantity="10" max_trials="10000">
         <foot-bot id="a">
           <controller config="ffc" />
         </foot-bot>
@@ -98,20 +97,20 @@
 <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="build/problem/loop_functions/combined/libcombined_loop_functions.so"
-                  label="combined_loop_functions">
+  <loop_functions library="build/problem/loop_functions/combined_novis/libcombined_novis_loop_functions.so"
+                  label="combined_novis_loop_functions">
     <foraging 
 	radius="0.1"
 	nestSize="2"
 	nbFoodPatches="2"
-	nbFoodItems="100"
+	nbFoodItems="50"
 	renewalRate="1"
 	foodPatchSize="3"
 	type = "patched"
-	nbSolitary = "4"
-	nbRecruiter = "4"
-	nbRecruitee = "12"
-	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/combined_patched_1000.csv" />
+	nbSolitary = "2"
+	nbRecruiter = "2"
+	nbRecruitee = "6"
+	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/combined_patched_10.csv" />
   </loop_functions>
 
   <!-- ******************* -->

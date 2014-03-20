@@ -6,7 +6,7 @@
 #include "../../controllers/combined/bt_footbot_combined_controller.h"
 
 #define CLOSE_TO_NEST_PARAMETER 1
-#define CLOSE_TO_ARENA_END_PARAMETER 0.5f
+#define CLOSE_TO_ARENA_END_PARAMETER 0.0f
 #define SOLITARY 0
 #define RECRUITER 1
 #define RECRUITEE 2
@@ -101,7 +101,7 @@ void CCombinedLoopFunctions::Init(TConfigurationNode& t_node) {
 	}
 
 	m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
-	m_cOutput << "# clock,robot type,collected_food,average per 1000 steps" << std::endl;
+	m_cOutput << "# clock,solitary,recruiter,recruitee" << std::endl;
 }
 
 void CCombinedLoopFunctions::generateFoodPatches(){
@@ -243,22 +243,10 @@ void CCombinedLoopFunctions::PreStep() {
 		}
 
 		m_cOutput << GetSpace().GetSimulationClock() << ","
-				  << "SOLITARY" << ","
 				  << nbFoodSolitary << ","
-				  << nbFoodSolitary / (GetSpace().GetSimulationClock()/1000.0f)
+				  << nbFoodRecruiter << ","
+				  << nbFoodRecruitee
 				  << std::endl;
-
-		m_cOutput << GetSpace().GetSimulationClock() << ","
-						  << "RECRUITER" << ","
-						  << nbFoodRecruiter << ","
-						  << nbFoodRecruiter / (GetSpace().GetSimulationClock()/1000.0f)
-						  << std::endl;
-
-		m_cOutput << GetSpace().GetSimulationClock() << ","
-						  << "RECRUITEE" << ","
-						  << nbFoodRecruitee << ","
-						  << nbFoodRecruitee / (GetSpace().GetSimulationClock()/1000.0f)
-						  << std::endl;
 	}
 
 	if(GetSpace().GetSimulationClock() % 10000 == 0){

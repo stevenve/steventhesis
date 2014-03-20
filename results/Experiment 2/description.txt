@@ -1,0 +1,2 @@
+plain comparison of combined, solitary, patched and uniform, with odometry, small food patches, low density
+= experiment 3, but without odometry
