@@ -5,7 +5,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0"/>
-    <experiment length="5000" ticks_per_second="10" random_seed="86481"/>
+    <experiment length="5000" ticks_per_second="10" random_seed="93032"/>
   </framework>
 
   <!-- *************** -->
@@ -28,7 +28,7 @@
       </sensors>
 	<params>
 		<!-- signalCloseRange should be at least as big as obstacleAvoidanceDistance -->
-		<parameters useOdometry="false" exploreTime="1600" signalTime="47000" dropTime="1" pickupTime="1" signalCloseRange="70" signalDistance="500000" obstacleAvoidanceDistance="50" avoidanceFactor="3" signalHasPriority="false"/>
+		<parameters useOdometry="false" exploreTime="300" signalTime="16000" dropTime="1" pickupTime="1" signalCloseRange="70" signalDistance="500000" obstacleAvoidanceDistance="50" avoidanceFactor="3" signalHasPriority="true"/>
 	</params>
     </footbot_combined_novis_controller>
 
@@ -75,7 +75,7 @@
   <!-- * Loop functions * -->
   <!-- ****************** -->
   <loop_functions library="build/problem/loop_functions/combined_novis/libcombined_novis_loop_functions.so" label="combined_novis_loop_functions">
-    <foraging nbRobots="12" radius="0.1" nestSize="2" nbFoodPatches="1" nbFoodItems="50" renewalRate="1" foodPatchSize="2" type="patched" nbSolitary="0" nbRecruiter="8" nbRecruitee="4" output="/home/stevenve/ARGOS3/argos3-projects/problem/results/ga0.csv"/>
+    <foraging nbRobots="12" radius="0.1" nestSize="2" nbFoodPatches="1" nbFoodItems="50" renewalRate="1" foodPatchSize="2" type="patched" nbSolitary="3" nbRecruiter="3" nbRecruitee="6" output="/home/stevenve/ARGOS3/argos3-projects/problem/results/ga0.csv"/>
   </loop_functions>
 
   <!-- ******************* -->
