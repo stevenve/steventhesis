@@ -28,7 +28,6 @@ public:
    virtual bool CloseToArenaEnd(const CVector2& cPos);
    virtual void generateUniformFoodPatch();
    virtual void generateFoodPatches();
-   virtual void AddRobot(CRadians theta, Real r, CRadians angleSpace, int i);
 
 private:
 

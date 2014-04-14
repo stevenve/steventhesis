@@ -77,7 +77,6 @@ void CBTFootbotCombinedNoVisRootBehavior::Init(CCI_FootBotState& state) {
 	GetNodeAttribute(tForaging, "pickupTime", PICKUP_TIME);
 	GetNodeAttribute(tForaging, "signalCloseRange", SIGNAL_CLOSE_RANGE);
 	GetNodeAttribute(tForaging, "avoidanceFactor", AVOIDANCE_FACTOR);
-	GetNodeAttribute(tForaging, "signalHasPriority", SIGNAL_HAS_PRIORITY);
 	Real dist;
 	GetNodeAttribute(tForaging, "signalDistance", dist);
 	m_pcSignalling->SetMaxDistance(dist);
@@ -203,10 +202,6 @@ void CBTFootbotCombinedNoVisRootBehavior::StepRecruitee(CCI_FootBotState& c_robo
 	}
 	case SStateData::STATE_EXPLORING_SIGNAL_AREA: {
 		ExploreSignalArea();
-		break;
-	}
-	case SStateData::STATE_GO_TO_FOOD: {
-		GoToFood();
 		break;
 	}
 	default: {
@@ -442,7 +437,7 @@ void CBTFootbotCombinedNoVisRootBehavior::GoToVector(CVector2 vec){
 
 bool CBTFootbotCombinedNoVisRootBehavior::IsDoneLookingForFood(){
 	CVector2 tmp = m_pcOdometry->GetReversedLocationVector();
-	return tmp.Length() <= 10;
+	return tmp.Length() <= 7;
 }
 
 void CBTFootbotCombinedNoVisRootBehavior::ResetOdometry(){
@@ -502,27 +497,27 @@ void CBTFootbotCombinedNoVisRootBehavior::UpdateStateDataSolitary(){
 
 	if(m_sStateData.State == SStateData::STATE_DROP && pickedUp == false){
 		if(USE_ODOMETRY){
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
+			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
 			m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
 		}else{
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
 			m_sStateData.State = SStateData::STATE_EXPLORING;
 		}
 	}else if(m_sStateData.State == SStateData::STATE_RETURN_TO_NEST && m_sStateData.InNest) {
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 		timer = PICKUP_TIME;
 		m_sStateData.State = SStateData::STATE_DROP;
 	}else if((m_sStateData.State == SStateData::STATE_EXPLORING || m_sStateData.State == SStateData::STATE_GO_TO_FOOD) && m_sFoodData.HasFoodItem) {
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 		timer = PICKUP_TIME;
 		m_sStateData.State = SStateData::STATE_PICK_UP;
 	}else if(m_sStateData.State == SStateData::STATE_PICK_UP && pickedUp){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::GREEN);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::GREEN);
 		m_pcOdometry->Reset(*c_robot_state);
 		m_pcOdometry->Start();
 		m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
 	}else if(m_sStateData.State == SStateData::STATE_GO_TO_FOOD && IsDoneLookingForFood()){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
 		m_sStateData.State = SStateData::STATE_EXPLORING;
 	}
 }
@@ -540,61 +535,45 @@ void CBTFootbotCombinedNoVisRootBehavior::UpdateStateDataRecruitee(){
 		m_sStateData.InNest = false;
 
 	if(m_sStateData.State == SStateData::STATE_EXPLORING && signalFound){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::YELLOW);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::YELLOW);
 		m_sStateData.State = SStateData::STATE_FOLLOW_SIGNAL;
-		/* next is for odometry */
-	}else if((m_sStateData.State == SStateData::STATE_EXPLORING || m_sStateData.State == SStateData::STATE_GO_TO_FOOD) && m_sFoodData.HasFoodItem){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+	}else if(m_sStateData.State == SStateData::STATE_EXPLORING && m_sFoodData.HasFoodItem){
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 		timer = PICKUP_TIME;
 		m_sStateData.State = SStateData::STATE_PICK_UP;
 	}else if(m_sStateData.State == SStateData::STATE_FOLLOW_SIGNAL){
 		if(m_sFoodData.HasFoodItem){
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 			timer = PICKUP_TIME;
 			m_sStateData.State = SStateData::STATE_PICK_UP;
 		}else if(closeToSignal){
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLUE);
+			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLUE);
 			signalExploreTimer = SIGNAL_EXPLORE_TIME;
 			m_sStateData.State = SStateData::STATE_EXPLORING_SIGNAL_AREA;
 		}else if(!signalFound){
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
 			m_sStateData.State = SStateData::STATE_EXPLORING;
 		}
 	}else if(m_sStateData.State == SStateData::STATE_EXPLORING_SIGNAL_AREA){
 		if(m_sFoodData.HasFoodItem){
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 			closeToSignal = false;
 			timer = PICKUP_TIME;
 			m_sStateData.State = SStateData::STATE_PICK_UP;
 		} else if(signalExploreTimer == 0){
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
 			closeToSignal = false;
 			m_sStateData.State = SStateData::STATE_EXPLORING;
 		}
 	}else if(m_sStateData.State == SStateData::STATE_PICK_UP && pickedUp){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::GREEN);
-		m_pcOdometry->Reset(*c_robot_state);
-		m_pcOdometry->Start();
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::GREEN);
 		m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
 	}else if(m_sStateData.State == SStateData::STATE_RETURN_TO_NEST && m_sStateData.InNest){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 		timer = DROP_TIME;
 		m_sStateData.State = SStateData::STATE_DROP;
 	}else if(m_sStateData.State == SStateData::STATE_DROP && pickedUp == false){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
-//		m_sStateData.State = SStateData::STATE_EXPLORING;
-		if(USE_ODOMETRY){
-			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
-			m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
-		}else{
-			//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
-			m_sStateData.State = SStateData::STATE_EXPLORING;
-		}
-	}else if(m_sStateData.State == SStateData::STATE_GO_TO_FOOD && SIGNAL_HAS_PRIORITY && signalFound){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::YELLOW);
-		m_sStateData.State = SStateData::STATE_FOLLOW_SIGNAL;
-	}else if(m_sStateData.State == SStateData::STATE_GO_TO_FOOD && IsDoneLookingForFood()){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
 		m_sStateData.State = SStateData::STATE_EXPLORING;
 	}
 }
@@ -606,32 +585,25 @@ void CBTFootbotCombinedNoVisRootBehavior::UpdateStateDataRecruiter(){
 		m_sStateData.InNest = false;
 
 	if(m_sStateData.State == SStateData::STATE_DROP && pickedUp == false){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
-//		m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
-		if(USE_ODOMETRY){
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
-			m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
-		}else{
-			m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
-			m_sStateData.State = SStateData::STATE_EXPLORING;
-		}
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::RED);
+		m_sStateData.State = SStateData::STATE_GO_TO_FOOD;
 	}else if(m_sStateData.State == SStateData::STATE_RETURN_TO_NEST && m_sStateData.InNest) {
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 		timer = DROP_TIME;
 		m_sStateData.State = SStateData::STATE_DROP;
 	}else if((m_sStateData.State == SStateData::STATE_EXPLORING || m_sStateData.State == SStateData::STATE_GO_TO_FOOD) && m_sFoodData.HasFoodItem) {
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::WHITE);
 		timer = SIGNAL_TIME;
 		m_pcSignalling->StartSignal(*c_robot_state);
 		m_sStateData.State = SStateData::STATE_SIGNAL_AND_PICK_UP;
 	}else if(m_sStateData.State == SStateData::STATE_SIGNAL_AND_PICK_UP && pickedUp){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::GREEN);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::GREEN);
 		m_pcOdometry->Reset(*c_robot_state);
 		m_pcOdometry->Start();
 		m_pcSignalling->StopSignal(*c_robot_state);
 		m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
 	}else if(m_sStateData.State == SStateData::STATE_GO_TO_FOOD && IsDoneLookingForFood()){
-		m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
+		//m_pcControlLeds->SetAllLedsColor(*c_robot_state, CColor::BLACK);
 		m_sStateData.State = SStateData::STATE_EXPLORING;
 	}
 }

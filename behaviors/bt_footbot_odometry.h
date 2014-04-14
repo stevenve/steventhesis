@@ -21,26 +21,28 @@ private:
 	Real delta_s;
 	Real x;
 	Real y;
+	CRandom::CRNG* m_pcRNG;
+	CVector2 noise;
 
 
 public:
 
-		CBTFootbotOdometry(CCI_RobotData<CCI_FootBotState>* c_robot_data);
-    virtual ~CBTFootbotOdometry();
+	CBTFootbotOdometry(CCI_RobotData<CCI_FootBotState>* c_robot_data);
+	virtual ~CBTFootbotOdometry();
 
-    virtual void Init(CCI_FootBotState& c_robot_state);
-    virtual void Step(CCI_FootBotState& c_robot_state);
+	virtual void Init(CCI_FootBotState& c_robot_state);
+	virtual void Step(CCI_FootBotState& c_robot_state);
 
-    virtual void Destroy(CCI_FootBotState& c_robot_state);
-    virtual void Reset(CCI_FootBotState& c_robot_state);
+	virtual void Destroy(CCI_FootBotState& c_robot_state);
+	virtual void Reset(CCI_FootBotState& c_robot_state);
 
-    virtual CRadians GetAngle();
-    virtual void Start();
-    virtual void Stop();
-    virtual Real GetDistance();
-    //virtual CVector2 GetSavedLocation();
-    virtual CVector2 GetReversedLocationVector();
-    //virtual void ReverseStep(CCI_FootBotState& c_robot_state);
+	virtual CRadians GetAngle();
+	virtual void Start();
+	virtual void Stop();
+	virtual Real GetDistance();
+	//virtual CVector2 GetSavedLocation();
+	virtual CVector2 GetReversedLocationVector();
+	//virtual void ReverseStep(CCI_FootBotState& c_robot_state);
 
 };
 

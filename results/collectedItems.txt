@@ -1,2 +1,1 @@
-# clock,robot type,collected_food,average per 1000 steps
-1000,0,0,0
+# clock	collected_food	avarage per 100 steps

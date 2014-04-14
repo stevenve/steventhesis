@@ -4,9 +4,6 @@
 //#include <argos3/core/utility/datatypes/any.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include "../../controllers/combined_novis/bt_footbot_combined_novis_controller.h"
-#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
-#include <string.h>
-#include <argos3/core/simulator/simulator.h>
 
 #define CLOSE_TO_NEST_PARAMETER 1
 #define CLOSE_TO_ARENA_END_PARAMETER 0.0f
@@ -78,48 +75,26 @@ void CCombinedNoVisLoopFunctions::Init(TConfigurationNode& t_node) {
 		}
 		FillFood();
 
-
-
-		/* Add robots */
-		int nbRobots;
-		GetNodeAttribute(tForaging, "nbRobots", nbRobots);
-		char id[] ="ffc";
-		CRadians angleSpace = CRadians(CRadians(0).TWO_PI.GetValue()/nbRobots);
-		CRadians theta = CRadians(0);
-		Real r = 1.0f;
-		int type = 0;
-		Real rab_range = 500000;
-		CRadians aperture = ToRadians(CDegrees(70.0f));
-		for (int i=0; i < nbRobots; i++){
-			AddRobot(theta, r, angleSpace, i);
-			theta += angleSpace;
-		}
-
-
-
 		CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
-		type = 0;
 		for(CSpace::TMapPerType::iterator it = m_cFootbots.begin(); it != m_cFootbots.end(); ++it) {
 			/* Get handle to foot-bot entity and controller */
 			CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
 			CBTFootbotCombinedNoVisController& cController = dynamic_cast<CBTFootbotCombinedNoVisController&>(cFootBot.GetControllableEntity().GetController());
 			CBTFootbotCombinedNoVisRootBehavior* pcRootBehavior = cController.GetRootBehavior();
 
-			if(type == 0 && nbSolitary != 0){
+			if(nbSolitary != 0){
 				pcRootBehavior->SetRobotType(SOLITARY);
 				nbSolitary--;
 				LOG << "Solitary added" << "\n";
-			}else if(type == 1 && nbRecruiter != 0){
+			}else if(nbRecruiter != 0){
 				pcRootBehavior->SetRobotType(RECRUITER);
 				nbRecruiter--;
 				LOG << "Recruiter added" << "\n";
-			}else if(type == 2 && nbRecruitee != 0){
+			}else if(nbRecruitee != 0){
 				pcRootBehavior->SetRobotType(RECRUITEE);
 				nbRecruitee--;
 				LOG << "Recruitee added" << "\n";
 			}
-
-			type++; type %= 3;
 
 		}
 
@@ -132,47 +107,6 @@ void CCombinedNoVisLoopFunctions::Init(TConfigurationNode& t_node) {
 	m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
 	m_cOutput << "# clock,solitary,recruiter,recruitee" << std::endl;
 	//LOG << (double)(clock() - begin) / CLOCKS_PER_SEC << "\n";
-}
-
-/****************************************/
-/****************************************/
-
-void CCombinedNoVisLoopFunctions::AddRobot(CRadians theta, Real r, CRadians angleSpace, int i){
-	// initialize position in circle (roles are alternated)
-	Real x = r*Cos(theta);
-	Real y = r*Sin(theta);
-	CVector3 pos = CVector3(x,y,0);
-	CQuaternion orientation = CQuaternion(theta,CVector3(0,0,1));
-
-	char str[15];
-	sprintf(str, "fb%d", i);
-
-	/* Build the XML tree */
-	TConfigurationNode tEntityTree("foot-bot");
-	SetNodeAttribute(tEntityTree, "id", str);
-	//SetNodeAttribute(tEntityTree, "position", pos);
-	//SetNodeAttribute(tEntityTree, "orientation", orientation);
-	TConfigurationNode tcontroller("controller");
-	SetNodeAttribute(tcontroller, "config", "ffc");
-	AddChildNode(tEntityTree, tcontroller);
-
-	/* Create entity */
-	CEntity* pcEntity = CFactory<CEntity>::New(tEntityTree.Value());
-	/* If the tree does not have a 'body' node, create a new one */
-	if(!NodeExists(tEntityTree, "body")) {
-		TConfigurationNode tBodyNode("body");
-		AddChildNode(tEntityTree, tBodyNode);
-	}
-	/* Get 'body' node */
-	TConfigurationNode& tBodyNode = GetNode(tEntityTree, "body");
-	/* Set the position */
-	SetNodeAttribute(tBodyNode, "position", pos);
-	/* Set the orientation */
-	SetNodeAttribute(tBodyNode, "orientation", orientation);
-	/* Init the entity (this also creates the components, if pcEntity is a composable) */
-	pcEntity->Init(tEntityTree);
-	/* Add the entity */
-	AddEntity(*pcEntity);
 }
 
 void CCombinedNoVisLoopFunctions::generateFoodPatches(){
@@ -220,7 +154,6 @@ void CCombinedNoVisLoopFunctions::Destroy() {
 /****************************************/
 
 void CCombinedNoVisLoopFunctions::PreStep() {
-
 	if(--foodClock == 0){
 		AddOneFood();
 		foodClock = renewalRate;
@@ -315,14 +248,14 @@ void CCombinedNoVisLoopFunctions::PreStep() {
 		}
 
 		m_cOutput << GetSpace().GetSimulationClock() << ","
-				<< nbFoodSolitary << ","
-				<< nbFoodRecruiter << ","
-				<< nbFoodRecruitee
-				<< std::endl;
+				  << nbFoodSolitary << ","
+				  << nbFoodRecruiter << ","
+				  << nbFoodRecruitee
+				  << std::endl;
 	}
 
 	if(GetSpace().GetSimulationClock() % 10000 == 0){
-		LOG << "Clock at: " << GetSpace().GetSimulationClock() << std::endl;
+			LOG << "Clock at: " << GetSpace().GetSimulationClock() << std::endl;
 	}
 }
 
@@ -377,7 +310,7 @@ void CCombinedNoVisLoopFunctions::AddOneFood(){
 
 CVector2 CCombinedNoVisLoopFunctions::GenerateFoodPatchPosition(){
 
-	/*****CRange<Real> xRange(-(arenaSize.GetX()/2)+foodPatchSize/2, arenaSize.GetX()/2-foodPatchSize/2);
+	/*CRange<Real> xRange(-(arenaSize.GetX()/2)+foodPatchSize/2, arenaSize.GetX()/2-foodPatchSize/2);
 	CRange<Real> yRange(-(arenaSize.GetY()/2)+foodPatchSize/2, arenaSize.GetY()/2-foodPatchSize/2);
 	m_pcRNG->Uniform(xRange);m_pcRNG->Uniform(xRange); m_pcRNG->Uniform(xRange);
 	CVector2 tmp(0,0);
@@ -385,21 +318,16 @@ CVector2 CCombinedNoVisLoopFunctions::GenerateFoodPatchPosition(){
 		tmp.Set(m_pcRNG->Uniform(xRange), m_pcRNG->Uniform(yRange));
 	}
 
-	return tmp;******/
+	return tmp;*/
 
-	/*CRange<Real> xRange(-(arenaSize.GetX()/2), arenaSize.GetX()/2);
+	CRange<Real> xRange(-(arenaSize.GetX()/2), arenaSize.GetX()/2);
 	CRange<Real> yRange(-(arenaSize.GetY()/2), arenaSize.GetY()/2);
 	m_pcRNG->Uniform(xRange);m_pcRNG->Uniform(xRange); m_pcRNG->Uniform(xRange);
 	CVector2 tmp(0,0);
 	while(CloseToNest(tmp) || CloseToArenaEnd(tmp)){
 		tmp.Set(m_pcRNG->Uniform(xRange), m_pcRNG->Uniform(yRange));
-	}*/
+	}
 
-	float avDistUnit = 0.3825978582; // average distance for arena of size 1, calculated beforehand through integrals
-	float r = avDistUnit * arenaSize.GetX() + avDistUnit * (nestSize+1); // radius on which to place food patches
-	CRange<Real> range = CRange<Real>(0.0,2*CRadians(0).PI.GetValue());
-	CRadians angle = CRadians(m_pcRNG->Uniform(range));
-	CVector2 tmp = CVector2(r,angle);
 	return tmp;
 }
 /****************************************/

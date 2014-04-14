@@ -30,7 +30,6 @@ class CBTFootbotCombinedNoVisRootBehavior: public CCI_Behavior<CCI_FootBotState>
 
 private:
 
-	bool SIGNAL_HAS_PRIORITY;
 	bool USE_ODOMETRY;
 	int AVOIDANCE_FACTOR;
 	int SIGNAL_EXPLORE_TIME;

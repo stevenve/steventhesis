@@ -1,6 +1,7 @@
 //#include <argos2/common/utility/logging/argos_log.h>
 #include <argos3/core/utility/datatypes/color.h>
 #include <argos3/core/utility/math/angles.h>
+#include <argos3/core/utility/math/rng.h>
 
 #define BEHAVIOR_NAME "[CBTFootbotOdometry]: "
 
@@ -34,6 +35,8 @@ void CBTFootbotOdometry::Init(CCI_FootBotState& c_robot_state) {
 	delta_s = 0;
 	x = 0;
 	y = 0;
+	m_pcRNG = CRandom::CreateRNG("argos");
+	noise = CVector2(0,0);
 }
 
 /****************************************/
@@ -81,7 +84,12 @@ void CBTFootbotOdometry::Destroy(CCI_FootBotState& c_robot_state) {
 CVector2 CBTFootbotOdometry::GetReversedLocationVector(){
 
 	CVector2 tmp = CVector2(-x,-y).Rotate(-theta);
-	return CVector2(tmp.GetX(),-tmp.GetY());
+	CVector2 tmp2 = CVector2(tmp.GetX(),-tmp.GetY());
+	/* Return with Noise */
+	CVector2 tmp3 = CVector2(tmp2.GetX()+ noise.GetX(),tmp2.GetY()+ noise.GetY());
+	return tmp3;
+
+
 	//return CVector2(x,y).Rotate(-theta);
 	//return (-CVector2(x,y)).Rotate(-theta);
 	//return CVector2(y,x).Rotate(theta);
@@ -113,6 +121,8 @@ CRadians CBTFootbotOdometry::GetAngle(){
 
 void CBTFootbotOdometry::Start(){
 	started = true;
+	CRange<Real> range = CRange<Real>(-10,10);
+	noise = CVector2(m_pcRNG->Uniform(range), m_pcRNG->Uniform(range));
 }
 
 void CBTFootbotOdometry::Stop(){
