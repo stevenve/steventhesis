@@ -33,12 +33,13 @@
 	<params>
 		<!-- signalCloseRange should be at least as big as obstacleAvoidanceDistance -->
 		<parameters 
-			useOdometry="true"
-			exploreTime="300"
-			signalTime="2000"
+			signalHasPriority="false"
+			useOdometry="false"
+			exploreTime="2200"
+			signalTime="6000"
 			dropTime="1"
 			pickupTime="1"
-			signalCloseRange="50" 
+			signalCloseRange="70" 
 			signalDistance="500000"
 			obstacleAvoidanceDistance="50"
 			avoidanceFactor="3"
@@ -80,17 +81,15 @@
            intensity="3.0"
            medium="leds" />
 
-    <distribute>
+    <!--distribute>
       <position method="uniform" min="-1,-1,0" max="1,1,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
-      <!--<position method="uniform" min="0,-1,0" max="0,-1,0" />-->
-      <!--<orientation method="uniform" min="-90,0,0" max="-90,0,0" />-->
       <entity quantity="10" max_trials="10000">
         <foot-bot id="a">
           <controller config="ffc" />
         </foot-bot>
       </entity>
-    </distribute>
+    </distribute-->
 
   </arena>
 
@@ -100,16 +99,17 @@
   <loop_functions library="build/problem/loop_functions/combined_novis/libcombined_novis_loop_functions.so"
                   label="combined_novis_loop_functions">
     <foraging 
+	nbRobots="12"
 	radius="0.1"
 	nestSize="2"
-	nbFoodPatches="2"
-	nbFoodItems="50"
+	nbFoodPatches="1"
+	nbFoodItems="200"
 	renewalRate="1"
-	foodPatchSize="3"
-	type = "patched"
-	nbSolitary = "2"
-	nbRecruiter = "2"
-	nbRecruitee = "6"
+	foodPatchSize="2"
+	type = "uniform"
+	nbSolitary = "4"
+	nbRecruiter = "4"
+	nbRecruitee = "4"
 	output="/home/stevenve/ARGOS3/argos3-projects/problem/results/combined_patched_10.csv" />
   </loop_functions>
 
@@ -131,7 +131,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <!-- visualization>
+  <visualization>
     <qt-opengl>
       <camera>
         <placement idx="0" position="0.300443,-0.0813248,2.3663" look_at="0.300855,-0.0613303,1.3665" lens_focal_length="7" />
@@ -139,6 +139,6 @@
       <user_functions library="build/problem/loop_functions/combined/libcombined_loop_functions.so"
                       label="combined_qt_user_functions" />
     </qt-opengl>
-  </visualization-->
+  </visualization>
 
 </argos-configuration>

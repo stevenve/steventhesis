@@ -95,31 +95,33 @@ void CCombinedNoVisLoopFunctions::Init(TConfigurationNode& t_node) {
 			theta += angleSpace;
 		}
 
-
-
 		CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
-		type = 0;
+		CRange<UInt32> welk = CRange<UInt32>(0,3);
 		for(CSpace::TMapPerType::iterator it = m_cFootbots.begin(); it != m_cFootbots.end(); ++it) {
 			/* Get handle to foot-bot entity and controller */
 			CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
 			CBTFootbotCombinedNoVisController& cController = dynamic_cast<CBTFootbotCombinedNoVisController&>(cFootBot.GetControllableEntity().GetController());
 			CBTFootbotCombinedNoVisRootBehavior* pcRootBehavior = cController.GetRootBehavior();
 
-			if(type == 0 && nbSolitary != 0){
-				pcRootBehavior->SetRobotType(SOLITARY);
-				nbSolitary--;
-				LOG << "Solitary added" << "\n";
-			}else if(type == 1 && nbRecruiter != 0){
-				pcRootBehavior->SetRobotType(RECRUITER);
-				nbRecruiter--;
-				LOG << "Recruiter added" << "\n";
-			}else if(type == 2 && nbRecruitee != 0){
-				pcRootBehavior->SetRobotType(RECRUITEE);
-				nbRecruitee--;
-				LOG << "Recruitee added" << "\n";
+			while (nbSolitary != 0 || nbRecruiter != 0 || nbRecruitee != 0){
+				int x = m_pcRNG->Uniform(welk);
+				if(x == 0 && nbSolitary != 0){
+					pcRootBehavior->SetRobotType(SOLITARY);
+					nbSolitary--;
+					LOG << "Solitary added" << "\n";
+					break;
+				}else if(x == 1 && nbRecruiter != 0){
+					pcRootBehavior->SetRobotType(RECRUITER);
+					nbRecruiter--;
+					LOG << "Recruiter added" << "\n";
+					break;
+				}else if(x == 2 && nbRecruitee != 0){
+					pcRootBehavior->SetRobotType(RECRUITEE);
+					nbRecruitee--;
+					LOG << "Recruitee added" << "\n";
+					break;
+				}
 			}
-
-			type++; type %= 3;
 
 		}
 
