@@ -1,0 +1,6 @@
+no odometry
+signal has priority = true
+exploretime = 3
+signaltime = 15
+signalcloserange = 2
+robotdist = [0,4,8]
